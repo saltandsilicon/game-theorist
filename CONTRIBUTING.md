@@ -10,7 +10,7 @@ main.
 
 The skill's framework table maps situation types to analytical approaches. To add a framework:
 
-1. Edit `skills/game-theorist/SKILL.md` — add a row to the Framework Reference table and, if the
+1. Edit `skills/game-theorist/SKILL.md` - add a row to the Framework Reference table and, if the
    framework requires its own phase logic, add a section under Phase 3 or Phase 4.
 2. Document it in `docs/frameworks.md` with the same structure as existing entries: when to use, the
    structure, key insight, business examples, what to do.
@@ -19,7 +19,7 @@ The skill's framework table maps situation types to analytical approaches. To ad
 ## Adding resources
 
 Edit `docs/resources.md` directly. Keep the existing structure (Books / Papers / Courses). One
-paragraph per resource — what it covers and why it matters. No affiliate links.
+paragraph per resource - what it covers and why it matters. No affiliate links.
 
 ## Adding examples
 
@@ -29,9 +29,9 @@ applied. Use realistic but anonymised business situations.
 ## Style
 
 - British English throughout (colour, behaviour, modelling, organisation)
-- No em dashes — use commas, colons, or full stops
+- No em dashes - use commas, colons, or full stops
 - Phase headers match the skill exactly (Phase 1: Deconstruction, etc.)
-- Concrete over abstract — name the framework, the move, the condition
+- Concrete over abstract - name the framework, the move, the condition
 
 ## Pull requests
 

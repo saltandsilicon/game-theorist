@@ -3,7 +3,7 @@
 **Apply defence-grade strategic reasoning to any competitive situation.**
 
 A skill for AI coding agents that installs a former Pentagon deterrence analyst into your session.
-Describe any situation — negotiation, pricing war, market entry, partnership, fundraising — and the
+Describe any situation - negotiation, pricing war, market entry, partnership, fundraising - and the
 model gets built phase by phase, through dialogue.
 
 Works with Claude Code, Codex, Gemini CLI, Cursor, Windsurf, and Cline.
@@ -16,22 +16,22 @@ Most strategic advice jumps to conclusions. This skill builds a model first.
 
 Six phases, one at a time:
 
-1. **Deconstruction** — what game is actually being played? (often different from what you think)
-2. **Incentive mapping** — what do the players truly want, not what they say they want?
-3. **Strategy space** — what moves exist? which are dominated and can be eliminated?
-4. **Equilibrium** — what outcome emerges if everyone acts rationally?
-5. **Recommendation** — the concrete move, how to make it credible, and what to do if it fails
-6. **Dynamic adaptation** — reputation, tit-for-tat, and changing the rules of the game entirely
+1. **Deconstruction** - what game is actually being played? (often different from what you think)
+2. **Incentive mapping** - what do the players truly want, not what they say they want?
+3. **Strategy space** - what moves exist? which are dominated and can be eliminated?
+4. **Equilibrium** - what outcome emerges if everyone acts rationally?
+5. **Recommendation** - the concrete move, how to make it credible, and what to do if it fails
+6. **Dynamic adaptation** - reputation, tit-for-tat, and changing the rules of the game entirely
 
 ---
 
 ## Example
 
 ```
-You: Model this — I'm raising prices by 20%. My main competitor has cheaper infrastructure.
+You: Model this - I'm raising prices by 20%. My main competitor has cheaper infrastructure.
      They've been matching my prices for two years. What happens?
 
-Agent: Sequential game, repeated. You're the Stackelberg leader — they react to your move.
+Agent: Sequential game, repeated. You're the Stackelberg leader - they react to your move.
        Two years of matching suggests they're signalling "we'll undercut if you diverge."
 
        What's their cost structure relative to yours? A) They're actually cheaper to operate,
@@ -56,7 +56,7 @@ advice. No "it depends." A specific recommendation with explicit conditions.
 **Manual:**
 
 ```bash
-git clone https://github.com/thomassauve26/game-theorist.git ~/.claude/skills/game-theorist
+git clone https://github.com/saltandsilicon/game-theorist.git ~/.claude/skills/game-theorist
 ```
 
 Then invoke with `/game-theorist` or describe a strategic situation.
@@ -64,14 +64,14 @@ Then invoke with `/game-theorist` or describe a strategic situation.
 ### Codex
 
 ```bash
-git clone https://github.com/thomassauve26/game-theorist.git
+git clone https://github.com/saltandsilicon/game-theorist.git
 cp -r game-theorist/skills/game-theorist ~/.codex/skills/
 ```
 
 ### Gemini CLI
 
 ```bash
-git clone https://github.com/thomassauve26/game-theorist.git
+git clone https://github.com/saltandsilicon/game-theorist.git
 cp -r game-theorist/skills/game-theorist ~/.gemini/skills/
 ```
 
@@ -84,14 +84,14 @@ Then add to your `GEMINI.md`:
 ### Cursor
 
 ```bash
-git clone https://github.com/thomassauve26/game-theorist.git
+git clone https://github.com/saltandsilicon/game-theorist.git
 cp game-theorist/.cursor/rules/game-theorist.mdc .cursor/rules/
 ```
 
 ### Windsurf
 
 ```bash
-git clone https://github.com/thomassauve26/game-theorist.git
+git clone https://github.com/saltandsilicon/game-theorist.git
 cp -r game-theorist/.windsurf/skills/game-theorist .windsurf/skills/
 ```
 
@@ -107,14 +107,18 @@ Add to your `.clinerules`:
 
 ## When to use it
 
-| Situation                          | What the model surfaces                                                                                              |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Pricing against a competitor       | Whether you're in a zero-sum price war or a coordination game — and which move breaks the equilibrium in your favour |
-| Negotiating a deal                 | The other party's true BATNA, which concessions cost you nothing but signal value to them                            |
-| Responding to a competitive threat | Whether to retaliate, ignore, or redirect — and what each signals to the market                                      |
-| Fundraising / term sheet           | The investor's incentive structure, what "we're still interested" actually means, when to create urgency             |
-| Partnership or M&A                 | Whether this is a positive-sum deal or one player extracting value from the other                                    |
-| Hiring a key person                | What the candidate's outside options are, how to structure the offer as a commitment device                          |
+| Situation                          | What the model surfaces                                                                                                                      |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pricing against a competitor       | Whether you're in a zero-sum price war or a coordination game - and which move breaks the equilibrium in your favour                         |
+| Negotiating a deal                 | The other party's true BATNA, which concessions cost you nothing but signal value to them                                                    |
+| Responding to a competitive threat | Whether to retaliate, ignore, or redirect - and what each signals to the market                                                              |
+| Fundraising / term sheet           | The investor's incentive structure, what "we're still interested" actually means, when to create urgency                                     |
+| Partnership or M&A                 | Whether this is a positive-sum deal or one player extracting value from the other                                                            |
+| Hiring a key person                | What the candidate's outside options are, how to structure the offer as a commitment device                                                  |
+| Salary negotiation                 | Your real leverage, their constraints, and whether to anchor high or create a competitive dynamic                                            |
+| Family or relationship conflict    | Whether it's a repeated game (it almost always is), what each party's true incentive is, and how to shift the equilibrium without escalating |
+| Friend group dynamics              | Who the silent players are, what coordination failure looks like, and how to make the outcome you want the focal point                       |
+| Personal decision with stakes      | Map your own incentives honestly, your BATNA, and what commitment device would make you follow through                                       |
 
 ---
 
@@ -146,7 +150,7 @@ Books, papers, and courses that informed this skill: [`docs/resources.md`](docs/
 
 ```
 game-theorist/
-├── skills/game-theorist/SKILL.md   Source of truth — only edit this
+├── skills/game-theorist/SKILL.md   Source of truth - only edit this
 ├── docs/
 │   ├── frameworks.md               Eight frameworks explained with examples
 │   ├── resources.md                Books, papers, courses
@@ -168,7 +172,7 @@ tools stay in sync.
 
 ## Contributing
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md). All changes go through `skills/game-theorist/SKILL.md` —
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). All changes go through `skills/game-theorist/SKILL.md` ,
 never edit the auto-generated copies directly.
 
 ---
