@@ -1,0 +1,1642 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Theory Analysis, the OpenAI board crisis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Geist:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      [data-theme='paper'] {
+        --bg: #f5f0e8;
+        --surface: #f9f5ec;
+        --text: #2a2618;
+        --text-mid: #3a3122;
+        --text-soft: #4a4030;
+        --rule: rgba(61, 57, 41, 0.12);
+        --brass: #6d4f1a;
+        --brass-on-dark: #d4a55a;
+        --grid: rgba(61, 57, 41, 0.04);
+        --eq-bg: #1a1812;
+        --eq-text: #f5f0e8;
+        --eq-text-soft: rgba(245, 240, 232, 0.55);
+        --title-bg: #fcfaf3;
+        --title-grid: rgba(72, 90, 130, 0.16);
+        --bg-atmosphere: radial-gradient(
+          ellipse 140% 80% at 50% -10%,
+          rgba(138, 102, 40, 0.07),
+          transparent 65%
+        );
+        --bg-grid-size: 32px 32px;
+        --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.22 0 0 0 0 0.16 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/></svg>");
+        --noise-size: 200px 200px;
+      }
+      [data-theme='graph'] {
+        --bg: #fcfbf6;
+        --surface: #ffffff;
+        --text: #1f1d16;
+        --text-mid: #2f2a1e;
+        --text-soft: #463f30;
+        --rule: rgba(40, 50, 80, 0.14);
+        --brass: #1f3a70;
+        --brass-on-dark: #6b8fd4;
+        --grid: rgba(40, 50, 80, 0.12);
+        --eq-bg: #14182a;
+        --eq-text: #f0f2f8;
+        --eq-text-soft: rgba(240, 242, 248, 0.58);
+        --title-bg: #ffffff;
+        --title-grid: rgba(40, 50, 80, 0.18);
+        --bg-atmosphere: none;
+        --bg-grid-size: 22px 22px;
+        --noise: none;
+        --noise-size: 0;
+      }
+      [data-theme='kraft'] {
+        --bg: #c9a778;
+        --surface: #d4b88a;
+        --text: #1f1709;
+        --text-mid: #2a1d0a;
+        --text-soft: #3e2c10;
+        --rule: rgba(31, 23, 9, 0.22);
+        --brass: #3d2400;
+        --brass-on-dark: #f0c878;
+        --grid: rgba(31, 23, 9, 0.06);
+        --eq-bg: #1f1709;
+        --eq-text: #f0d8a8;
+        --eq-text-soft: rgba(240, 216, 168, 0.62);
+        --title-bg: #d4b88a;
+        --title-grid: rgba(31, 23, 9, 0.14);
+        --bg-atmosphere: radial-gradient(
+          ellipse 140% 80% at 50% -10%,
+          rgba(255, 220, 170, 0.1),
+          transparent 65%
+        );
+        --bg-grid-size: 0;
+        --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='k'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch' seed='2'/><feColorMatrix values='0 0 0 0 0.15 0 0 0 0 0.10 0 0 0 0 0.04 0 0 0 0.7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23k)' opacity='0.55'/></svg>");
+        --noise-size: 320px 320px;
+      }
+      [data-theme='dark'] {
+        --bg: #14120e;
+        --surface: #1f1d16;
+        --text: #f0eadc;
+        --text-mid: #d8d2c0;
+        --text-soft: #ada48f;
+        --rule: rgba(240, 234, 220, 0.1);
+        --brass: #d4a55a;
+        --brass-on-dark: #d4a55a;
+        --grid: rgba(240, 234, 220, 0.05);
+        --eq-bg: #f0eadc;
+        --eq-text: #1a1812;
+        --eq-text-soft: rgba(26, 24, 18, 0.65);
+        --title-bg: #1c1a14;
+        --title-grid: rgba(180, 195, 230, 0.1);
+        --bg-atmosphere: radial-gradient(
+          ellipse 140% 80% at 50% -10%,
+          rgba(212, 165, 90, 0.06),
+          transparent 60%
+        );
+        --bg-grid-size: 32px 32px;
+        --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='nd'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.92 0 0 0 0 0.86 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23nd)'/></svg>");
+        --noise-size: 200px 200px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+        --font-serif: 'EB Garamond', 'Garamond', 'Hoefler Text', Georgia, serif;
+        --font-sans: 'Geist', 'Helvetica Neue', system-ui, sans-serif;
+      }
+
+      body {
+        background-color: var(--bg);
+        background-image:
+          var(--bg-atmosphere, none), linear-gradient(to right, var(--grid) 1px, transparent 1px),
+          linear-gradient(to bottom, var(--grid) 1px, transparent 1px), var(--noise, none);
+        background-size:
+          100% 100%,
+          var(--bg-grid-size),
+          var(--bg-grid-size),
+          var(--noise-size);
+        background-attachment: fixed;
+        color: var(--text);
+        font-family: var(--font-serif);
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        font-feature-settings: 'kern', 'liga', 'onum';
+        min-height: 100dvh;
+        padding: clamp(2rem, 6vw, 5rem) clamp(1.25rem, 5vw, 3rem);
+        transition:
+          background-color 0.4s ease,
+          color 0.4s ease;
+      }
+
+      .page {
+        max-width: 640px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .meta-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-mid);
+        padding-bottom: 1.25rem;
+        border-bottom: 0.5px solid var(--rule);
+      }
+      .meta-bar .meta-right {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .glossary {
+        margin-top: 1.5rem;
+        border: 0.5px solid var(--rule);
+        border-radius: 2px;
+        background: color-mix(in srgb, var(--surface) 60%, transparent);
+      }
+      .glossary > summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 0.9rem 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--font-sans);
+        font-size: 0.66rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-mid);
+        user-select: none;
+      }
+      .glossary > summary::-webkit-details-marker {
+        display: none;
+      }
+      .glossary > summary::after {
+        content: '+';
+        font-size: 1.4rem;
+        line-height: 0.8;
+        color: var(--brass);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .glossary[open] > summary::after {
+        content: '\2013';
+      }
+      .glossary[open] > summary {
+        border-bottom: 0.5px solid var(--rule);
+      }
+      .glossary-body {
+        padding: 1.25rem 1.1rem 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.85rem 1.75rem;
+      }
+      @media (min-width: 520px) {
+        .glossary-body {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .glossary-term {
+        font-size: 0.94rem;
+        line-height: 1.5;
+        color: var(--text-mid);
+        text-wrap: pretty;
+        font-weight: 500;
+      }
+      .glossary-term dt {
+        display: inline;
+        color: var(--text);
+        font-weight: 600;
+      }
+      .glossary-term dt::after {
+        content: ': ';
+        color: var(--brass);
+        font-weight: 400;
+      }
+      .glossary-term dd {
+        display: inline;
+        margin: 0;
+      }
+      .glossary-note {
+        grid-column: 1 / -1;
+        margin-top: 0.25rem;
+        padding-top: 0.85rem;
+        border-top: 0.5px solid var(--rule);
+        font-size: 0.82rem;
+        color: var(--text-mid);
+        font-weight: 500;
+      }
+
+      .title {
+        margin-top: clamp(3rem, 7vw, 4.5rem);
+        position: relative;
+        padding: clamp(2rem, 5vw, 3rem) clamp(1.75rem, 4vw, 2.5rem);
+        background-color: var(--title-bg);
+        background-image:
+          linear-gradient(to right, var(--title-grid) 1px, transparent 1px),
+          linear-gradient(to bottom, var(--title-grid) 1px, transparent 1px);
+        background-size: 18px 18px;
+        background-position: 0.5px 0.5px;
+        border: 0.5px solid var(--rule);
+        border-radius: 2px;
+        box-shadow:
+          0 0.4rem 1.5rem rgba(0, 0, 0, 0.06),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.4);
+        transition: background-color 0.4s ease;
+      }
+      .roman {
+        display: block;
+        color: var(--brass);
+        font-size: 1.05rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.85rem;
+      }
+      h1 {
+        font-weight: 600;
+        font-size: clamp(2.4rem, 5.5vw, 3.2rem);
+        line-height: 1.05;
+        letter-spacing: -0.012em;
+        color: var(--text);
+        text-wrap: balance;
+        margin-bottom: 0.55rem;
+      }
+      .subtitle {
+        font-size: 1.1rem;
+        color: var(--text-mid);
+        font-weight: 500;
+      }
+      .subtitle .brass-inline {
+        color: var(--brass);
+        font-weight: 500;
+      }
+      .subtitle .sep {
+        color: var(--text-soft);
+        margin: 0 0.5em;
+      }
+
+      section.block {
+        margin-top: clamp(3rem, 6vw, 4rem);
+      }
+      .section-label {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-mid);
+        margin-bottom: 1.75rem;
+      }
+      .section-label::after {
+        content: '';
+        flex: 1;
+        height: 0.5px;
+        background: var(--rule);
+      }
+      .section-label .marker {
+        font-family: var(--font-sans);
+        color: var(--eq-text);
+        background: var(--eq-bg);
+        padding: 0.35em 0.7em;
+        border-radius: 2px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        transition:
+          background-color 0.4s ease,
+          color 0.4s ease;
+      }
+
+      .players {
+        list-style: none;
+      }
+      .players li {
+        display: grid;
+        grid-template-columns: 2.75rem 7.5rem 1fr;
+        gap: 1.5rem;
+        align-items: baseline;
+        padding: 0.85rem;
+        margin: 0 -0.85rem;
+        border-bottom: 0.5px solid var(--rule);
+        border-radius: 2px;
+        transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .players li:last-child {
+        border-bottom: none;
+      }
+      .players li:hover {
+        background-color: color-mix(in srgb, var(--brass) 6%, transparent);
+      }
+      .players .player-num {
+        color: var(--brass);
+        text-align: right;
+        font-weight: 500;
+      }
+      .players .player-name {
+        font-weight: 600;
+        color: var(--text);
+      }
+      .players .player-role {
+        color: var(--text-mid);
+        text-wrap: pretty;
+      }
+
+      .prose {
+        max-width: 65ch;
+        font-size: 1.08rem;
+        line-height: 1.65;
+        color: var(--text);
+        text-wrap: pretty;
+        font-weight: 500;
+      }
+      .prose p + p {
+        margin-top: 1.05em;
+      }
+      .prose .brass-inline {
+        color: var(--brass);
+        font-weight: 500;
+      }
+
+      .equilibrium {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background: var(--eq-bg);
+        color: var(--eq-text);
+        padding: clamp(1.75rem, 4vw, 2.5rem);
+        border-radius: 3px;
+        box-shadow:
+          0 0.5rem 1.75rem rgba(0, 0, 0, 0.18),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.08),
+          inset 0 -0.5px 0 rgba(0, 0, 0, 0.4);
+        transition:
+          background-color 0.4s ease,
+          color 0.4s ease,
+          transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .equilibrium::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: radial-gradient(
+          400px circle at var(--mx, 50%) var(--my, 50%),
+          color-mix(in srgb, var(--brass-on-dark) 10%, transparent),
+          transparent 45%
+        );
+        pointer-events: none;
+      }
+      .equilibrium > * {
+        position: relative;
+        z-index: 1;
+      }
+      .equilibrium:hover {
+        transform: perspective(1200px) rotateX(0.4deg) translateY(-1px);
+        box-shadow:
+          0 0.7rem 2.2rem rgba(0, 0, 0, 0.22),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.08),
+          inset 0 -0.5px 0 rgba(0, 0, 0, 0.4);
+      }
+      .equilibrium-statement {
+        font-size: 1.55rem;
+        line-height: 1.35;
+        color: var(--eq-text);
+        text-wrap: balance;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+      }
+      .equilibrium-statement .sep {
+        color: var(--brass-on-dark);
+        margin: 0 0.5em;
+      }
+      .equilibrium-caption {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.66rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--eq-text-soft);
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 0.5px solid currentColor;
+        opacity: 0.85;
+      }
+
+      .recommendation {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      @media (min-width: 600px) {
+        .recommendation {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .rec-item {
+        padding: 1.1rem 1.2rem 1.25rem;
+        background: var(--rec-bg, #ffffff);
+        border: 0.5px solid var(--rule);
+        border-radius: 4px;
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.03),
+          0 4px 12px rgba(0, 0, 0, 0.025),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.6);
+        display: block;
+        transition:
+          transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.4s ease;
+      }
+      .rec-item:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 2px 4px rgba(0, 0, 0, 0.04),
+          0 8px 22px rgba(0, 0, 0, 0.05),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.6);
+      }
+      .rec-label {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--brass);
+        margin-bottom: 0.55rem;
+      }
+      .rec-text {
+        display: block;
+        color: var(--text);
+        text-wrap: pretty;
+        font-weight: 500;
+        line-height: 1.55;
+        font-size: 0.98rem;
+      }
+      [data-theme='dark'] .rec-item {
+        --rec-bg: #1f1d16;
+      }
+      [data-theme='kraft'] .rec-item {
+        --rec-bg: #d8be90;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+        margin-top: 2.5rem;
+      }
+      @media (min-width: 600px) {
+        .stats {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      .stat {
+        background: var(--stat-bg, #ffffff);
+        padding: 1.1rem 1.2rem 1.25rem;
+        border-radius: 4px;
+        border: 0.5px solid var(--rule);
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.03),
+          0 4px 12px rgba(0, 0, 0, 0.025),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.6);
+        transition:
+          transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.4s ease;
+      }
+      [data-theme='dark'] .stat {
+        --stat-bg: #1f1d16;
+      }
+      [data-theme='kraft'] .stat {
+        --stat-bg: #d8be90;
+      }
+      .stat:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 4px 12px rgba(0, 0, 0, 0.06),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.4);
+      }
+      .stat--accent {
+        background: var(--eq-bg);
+        border-color: var(--eq-bg);
+      }
+      .stat--accent .stat-label {
+        color: var(--eq-text-soft);
+      }
+      .stat--accent .stat-value {
+        color: var(--brass-on-dark);
+      }
+      .stat-label {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.6rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-mid);
+        margin-bottom: 0.55rem;
+      }
+      .stat-value {
+        font-weight: 600;
+        font-size: 1.05rem;
+        line-height: 1.3;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+        text-wrap: balance;
+      }
+
+      footer {
+        margin-top: clamp(4rem, 9vw, 6rem);
+        padding-top: 2.5rem;
+        text-align: center;
+      }
+      footer .panot {
+        width: 26px;
+        height: 26px;
+        color: var(--brass);
+        opacity: 0.75;
+        margin: 0 auto 1.25rem;
+        display: block;
+        transition:
+          transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+          color 0.4s ease;
+      }
+      footer:hover .panot {
+        transform: rotate(45deg);
+      }
+      footer .colophon {
+        font-size: 0.78rem;
+        color: var(--text-mid);
+        line-height: 1.55;
+      }
+      footer .colophon strong {
+        font-weight: 600;
+        color: var(--text);
+      }
+      footer .colophon a {
+        color: var(--text-mid);
+        text-decoration: none;
+        border-bottom: 0.5px solid var(--rule);
+        transition:
+          color 0.2s ease,
+          border-color 0.2s ease;
+      }
+      footer .colophon a:hover {
+        color: var(--brass);
+        border-bottom-color: var(--brass);
+      }
+      footer .colophon-meta {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.62rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-soft);
+        margin-top: 0.6rem;
+      }
+
+      /* Player card (deep version) */
+      .player-card {
+        padding: 1.25rem 1.35rem;
+        background: var(--player-bg, #ffffff);
+        border: 0.5px solid var(--rule);
+        border-radius: 4px;
+        margin-bottom: 0.65rem;
+        display: grid;
+        grid-template-columns: 2.5rem 1fr;
+        gap: 1.25rem;
+        align-items: start;
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.03),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.6);
+        transition:
+          transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.4s ease;
+      }
+      .player-card:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 2px 4px rgba(0, 0, 0, 0.04),
+          0 8px 20px rgba(0, 0, 0, 0.04),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.6);
+      }
+      .player-card:last-child {
+        margin-bottom: 0;
+      }
+      [data-theme='dark'] .player-card {
+        --player-bg: #1f1d16;
+      }
+      [data-theme='kraft'] .player-card {
+        --player-bg: #d8be90;
+      }
+      .player-card .player-num {
+        color: var(--brass);
+        font-weight: 500;
+        text-align: right;
+        padding-top: 0.15rem;
+      }
+      .player-card .player-body {
+      }
+      .player-card .player-name {
+        font-weight: 600;
+        color: var(--text);
+        font-size: 1.1rem;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      .player-card .player-headline {
+        color: var(--text-mid);
+        font-style: normal;
+        margin-bottom: 0.65rem;
+        font-size: 0.97rem;
+        font-weight: 500;
+      }
+      .player-card dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        column-gap: 1rem;
+        row-gap: 0.3rem;
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+      .player-card dt {
+        font-family: var(--font-sans);
+        color: var(--text-mid);
+        text-transform: uppercase;
+        font-size: 0.58rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        padding-top: 0.22em;
+      }
+      .player-card dd {
+        color: var(--text-mid);
+        margin: 0;
+      }
+
+      /* Strategy table */
+      .strategy-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.96rem;
+        margin-top: 0.5rem;
+      }
+      .strategy-table th {
+        text-align: left;
+        padding: 0.85rem 1rem;
+        font-family: var(--font-sans);
+        font-size: 0.6rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--text-mid);
+        border-bottom: 0.5px solid var(--rule);
+        vertical-align: bottom;
+      }
+      .strategy-table td {
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 0.5px solid var(--rule);
+        vertical-align: top;
+      }
+      .strategy-table td:first-child {
+        color: var(--text);
+        font-weight: 600;
+        width: 38%;
+      }
+      .strategy-table td:last-child {
+        color: var(--text-mid);
+        font-weight: 500;
+        line-height: 1.5;
+      }
+      .strategy-table tr.dominated td {
+        opacity: 0.55;
+      }
+      .strategy-table tr.dominated td:first-child {
+        text-decoration: line-through;
+      }
+      .strategy-table tr.dominant td {
+        background: color-mix(in srgb, var(--brass) 10%, var(--surface));
+        position: relative;
+      }
+      .strategy-table tr.dominant td:first-child {
+        color: var(--brass);
+        font-weight: 700;
+        padding-left: 2.1rem;
+        text-indent: 0;
+      }
+      .strategy-table tr.dominant td:first-child::before {
+        content: '\25B6';
+        position: absolute;
+        left: 0.85rem;
+        top: 1.15rem;
+        color: var(--brass);
+        font-size: 0.62rem;
+      }
+      .strategy-table tr.dominant td:last-child {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .strategy-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* Counter-scenarios */
+      .counter-scenarios {
+        display: grid;
+        gap: 1rem;
+      }
+      .counter-card {
+        padding: 1.1rem 1.25rem;
+        background: var(--surface);
+        border: 0.5px solid var(--rule);
+        border-radius: 3px;
+        transition:
+          background-color 0.4s ease,
+          transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .counter-card:hover {
+        transform: translateY(-1px);
+      }
+      .counter-card .counter-q {
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--brass);
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      .counter-card .counter-a {
+        color: var(--text);
+        font-size: 0.97rem;
+        line-height: 1.55;
+        font-weight: 500;
+      }
+
+      /* Pull quote (epilogue) */
+      .pull-quote {
+        font-size: 1.25rem;
+        line-height: 1.5;
+        color: var(--text);
+        text-wrap: balance;
+        padding: 1.25rem 0;
+        border-top: 0.5px solid var(--rule);
+        border-bottom: 0.5px solid var(--rule);
+      }
+      .pull-quote .brass-inline {
+        color: var(--brass);
+        font-weight: 500;
+      }
+
+      .theme-switch {
+        position: fixed;
+        top: 1.25rem;
+        right: 1.25rem;
+        z-index: 100;
+        display: flex;
+        gap: 0.4rem;
+        padding: 0.45rem 0.55rem;
+        background: color-mix(in srgb, var(--bg) 65%, transparent);
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+        border: 0.5px solid var(--rule);
+        border-radius: 100px;
+        box-shadow:
+          0 4px 14px rgba(0, 0, 0, 0.06),
+          inset 0 0.5px 0 rgba(255, 255, 255, 0.3);
+        transition:
+          background-color 0.4s ease,
+          border-color 0.4s ease;
+      }
+      .theme-switch button {
+        appearance: none;
+        background: none;
+        border: 0.5px solid var(--rule);
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .theme-switch button:hover {
+        transform: scale(1.12);
+      }
+      .theme-switch button[aria-pressed='true'] {
+        outline: 1.5px solid var(--text);
+        outline-offset: 2px;
+      }
+      .theme-switch button[data-set='paper'] {
+        background: #f5f0e8;
+      }
+      .theme-switch button[data-set='graph'] {
+        background: #fcfbf6;
+        background-image:
+          linear-gradient(to right, rgba(40, 50, 80, 0.35) 0.5px, transparent 0.5px),
+          linear-gradient(to bottom, rgba(40, 50, 80, 0.35) 0.5px, transparent 0.5px);
+        background-size: 5px 5px;
+      }
+      .theme-switch button[data-set='kraft'] {
+        background: #c9a778;
+      }
+      .theme-switch button[data-set='dark'] {
+        background: #14120e;
+      }
+      @media (max-width: 540px) {
+        .theme-switch {
+          top: 0.75rem;
+          right: 0.75rem;
+          padding: 0.35rem 0.45rem;
+        }
+        .theme-switch button {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      ::selection {
+        background: color-mix(in srgb, var(--brass) 25%, transparent);
+        color: var(--text);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .page > * {
+        opacity: 0;
+        animation: fadeUp 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .page > .meta-bar {
+        animation-delay: 0.04s;
+      }
+      .page > .glossary {
+        animation-delay: 0.1s;
+      }
+      .page > .title {
+        animation-delay: 0.18s;
+      }
+      .page > section.block:nth-of-type(1) {
+        animation-delay: 0.26s;
+      }
+      .page > section.block:nth-of-type(2) {
+        animation-delay: 0.32s;
+      }
+      .page > section.block:nth-of-type(3) {
+        animation-delay: 0.38s;
+      }
+      .page > section.block:nth-of-type(4) {
+        animation-delay: 0.44s;
+      }
+      .page > section.block:nth-of-type(5) {
+        animation-delay: 0.5s;
+      }
+      .page > section.block:nth-of-type(6) {
+        animation-delay: 0.56s;
+      }
+      .page > section.block:nth-of-type(7) {
+        animation-delay: 0.62s;
+      }
+      .page > footer {
+        animation-delay: 0.68s;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .page > * {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+        .equilibrium:hover,
+        .stat:hover,
+        .players li:hover {
+          transform: none !important;
+        }
+        footer:hover::before {
+          transform: none !important;
+        }
+      }
+
+      /* Trophy thumbnail in title block */
+      .title {
+        position: relative;
+      }
+      .trophy {
+        position: absolute;
+        top: clamp(1rem, 3vw, 1.5rem);
+        right: clamp(1rem, 3vw, 1.5rem);
+        width: 56px;
+        height: 56px;
+        opacity: 0.9;
+        pointer-events: none;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+        transition:
+          transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.4s ease;
+      }
+      .title:hover .trophy {
+        transform: rotate(-4deg) scale(1.04);
+        opacity: 1;
+      }
+      [data-theme='dark'] .trophy {
+        opacity: 0.85;
+        mix-blend-mode: normal;
+      }
+      @media (max-width: 540px) {
+        .trophy {
+          width: 44px;
+          height: 44px;
+        }
+      }
+
+      /* Card accent palette (used by counter + recommendation, rotates by nth-child) */
+      .page {
+        --c1: #1e5a5a; /* teal */
+        --c2: #7a3a44; /* burgundy */
+        --c3: #234870; /* navy */
+        --c4: #6b5520; /* olive */
+      }
+      [data-theme='dark'] .page {
+        --c1: #6ec0c0;
+        --c2: #d48794;
+        --c3: #82a8d0;
+        --c4: #d4b860;
+      }
+      [data-theme='kraft'] .page {
+        --c1: #1e3a3a;
+        --c2: #5a1f24;
+        --c3: #1a2c50;
+        --c4: #4a3810;
+      }
+      [data-theme='graph'] .page {
+        --c1: #1e5a5a;
+        --c2: #7a3a44;
+        --c3: #234870;
+        --c4: #6b5520;
+      }
+
+      /* Counter cards: numbered + colored per nth-child */
+      .counter-card {
+        position: relative;
+        padding-left: 1.6rem !important;
+      }
+      .counter-card::before {
+        content: '';
+        position: absolute;
+        top: 1.3rem;
+        left: 1.35rem;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--c-accent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 18%, transparent);
+      }
+      .counter-card .counter-q {
+        padding-left: 0.85rem;
+        color: var(--c-accent) !important;
+      }
+      .counter-card .counter-a {
+        padding-left: 0.85rem;
+      }
+      .counter-card:nth-child(1) {
+        --c-accent: var(--c1);
+      }
+      .counter-card:nth-child(2) {
+        --c-accent: var(--c2);
+      }
+      .counter-card:nth-child(3) {
+        --c-accent: var(--c3);
+      }
+      .counter-card:nth-child(4) {
+        --c-accent: var(--c4);
+      }
+      .counter-card {
+        background: color-mix(in srgb, var(--c-accent) 4%, var(--counter-bg, #ffffff)) !important;
+        border-color: color-mix(in srgb, var(--c-accent) 18%, var(--rule)) !important;
+      }
+
+      /* Recommendation items: each move type gets its own accent */
+      .rec-item:nth-child(1) {
+        --c-accent: var(--c1);
+      }
+      .rec-item:nth-child(2) {
+        --c-accent: var(--c2);
+      }
+      .rec-item:nth-child(3) {
+        --c-accent: var(--c3);
+      }
+      .rec-item:nth-child(4) {
+        --c-accent: var(--c4);
+      }
+      .rec-item:nth-child(5) {
+        --c-accent: var(--c1);
+      }
+      .rec-item:nth-child(6) {
+        --c-accent: var(--c2);
+      }
+      .rec-item .rec-label {
+        color: var(--c-accent) !important;
+      }
+      .rec-item {
+        background: color-mix(in srgb, var(--c-accent) 4%, var(--rec-bg, #ffffff)) !important;
+        border-color: color-mix(in srgb, var(--c-accent) 18%, var(--rule)) !important;
+      }
+
+      /* Section label icons */
+      .section-label .icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.45rem;
+        height: 1.45rem;
+        font-family: var(--font-serif);
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--brass);
+        background: color-mix(in srgb, var(--brass) 10%, transparent);
+        border-radius: 50%;
+        text-transform: none;
+        letter-spacing: 0;
+        margin-right: 0.15rem;
+        line-height: 1;
+        transition:
+          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.4s ease;
+      }
+      .section-label:hover .icon {
+        transform: rotate(8deg) scale(1.05);
+        background: color-mix(in srgb, var(--brass) 18%, transparent);
+      }
+
+      @media print {
+        body {
+          background: white;
+          background-image: none;
+          padding: 0;
+          font-size: 11pt;
+        }
+        .theme-switch {
+          display: none;
+        }
+        .equilibrium {
+          box-shadow: none;
+          border: 0.5px solid var(--rule);
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="paper">
+    <nav class="theme-switch" aria-label="Theme switcher">
+      <button data-set="paper" aria-label="Paper" aria-pressed="true" title="Paper"></button>
+      <button data-set="graph" aria-label="Graph" aria-pressed="false" title="Graph"></button>
+      <button data-set="kraft" aria-label="Kraft" aria-pressed="false" title="Kraft"></button>
+      <button data-set="dark" aria-label="Dark" aria-pressed="false" title="Dark"></button>
+    </nav>
+
+    <main class="page">
+      <header class="meta-bar">
+        <span class="meta-left">Game Theory Analysis</span>
+        <span class="meta-right">22 April 2026</span>
+      </header>
+
+      <details class="glossary">
+        <summary>Glossary, game theory</summary>
+        <div class="glossary-body">
+          <dl class="glossary-term">
+            <dt>Game</dt>
+            <dd>
+              A situation where players make interdependent decisions. Each move depends on what
+              others might do.
+            </dd>
+          </dl>
+          <dl class="glossary-term">
+            <dt>Zero-sum</dt>
+            <dd>
+              One player's gain is another's loss. The opposite is positive-sum, where both can win.
+            </dd>
+          </dl>
+          <dl class="glossary-term">
+            <dt>Nash equilibrium</dt>
+            <dd>
+              A combination of strategies where no player gains from changing alone. Stable, not
+              always optimal.
+            </dd>
+          </dl>
+          <dl class="glossary-term">
+            <dt>BATNA</dt>
+            <dd>
+              Best Alternative To a Negotiated Agreement. Your fallback if the deal fails. Your real
+              position.
+            </dd>
+          </dl>
+          <dl class="glossary-term">
+            <dt>Coalition formation</dt>
+            <dd>
+              A subset of players who agree to coordinate moves. Can shift the equilibrium against
+              the rest.
+            </dd>
+          </dl>
+          <dl class="glossary-term">
+            <dt>Commitment device</dt>
+            <dd>
+              An action that removes your own flexibility, making a threat or promise credible.
+            </dd>
+          </dl>
+          <dl class="glossary-term">
+            <dt>Common knowledge</dt>
+            <dd>
+              A fact that everyone knows, everyone knows that everyone knows, and so on. Critical
+              for coordination.
+            </dd>
+          </dl>
+          <dl class="glossary-term">
+            <dt>Repeated game</dt>
+            <dd>
+              Players interact more than once. Cooperation becomes possible. Reputation becomes an
+              asset.
+            </dd>
+          </dl>
+          <p class="glossary-note">
+            Six phases: Deconstruction, Incentive mapping, Strategy space, Equilibrium,
+            Recommendation, Dynamic adaptation.
+          </p>
+        </div>
+      </details>
+
+      <section class="title">
+        <img class="trophy" src="./game-theorist-knight.webp" alt="game-theorist" />
+        <span class="roman">Part I, Case Study</span>
+        <h1>The OpenAI board crisis</h1>
+        <p class="subtitle">
+          <span class="brass-inline">Sequential</span><span class="sep">·</span>4 players<span
+            class="sep"
+            >·</span
+          >72 hours<span class="sep">·</span>17 to 21 November 2023
+        </p>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">⚐</span><span>Players</span>
+        </div>
+        <div class="players">
+          <article class="player-card">
+            <span class="player-num">I.</span>
+            <div class="player-body">
+              <span class="player-name">The non-profit board</span>
+              <p class="player-headline">Toner, Sutskever, D'Angelo, McCauley.</p>
+              <dl>
+                <dt>Stated</dt>
+                <dd>Preserve the OpenAI mission and safety mandate.</dd>
+                <dt>Actual</dt>
+                <dd>Reassert control over the direction of the leading AI lab.</dd>
+                <dt>Constraints</dt>
+                <dd>No equity, no employee mandate, opaque communication norms.</dd>
+                <dt>BATNA</dt>
+                <dd>Walk away as the directors who blocked the AI race. Career-ending in tech.</dd>
+                <dt>Time horizon</dt>
+                <dd>Long, mission-oriented. Underweighted the next 72 hours.</dd>
+              </dl>
+            </div>
+          </article>
+
+          <article class="player-card">
+            <span class="player-num">II.</span>
+            <div class="player-body">
+              <span class="player-name">Sam Altman</span>
+              <p class="player-headline">CEO of OpenAI, central node of the network.</p>
+              <dl>
+                <dt>Stated</dt>
+                <dd>Continue leading OpenAI through the GPT-4 era.</dd>
+                <dt>Actual</dt>
+                <dd>
+                  Lead whichever entity becomes the leading AI lab. The label matters less than the
+                  position.
+                </dd>
+                <dt>Constraints</dt>
+                <dd>Personal reputation, NDAs, commitments to investors.</dd>
+                <dt>BATNA</dt>
+                <dd>Microsoft AI lab with cash, compute, and any employee who follows. Strong.</dd>
+                <dt>Time horizon</dt>
+                <dd>Compressed to hours by the public nature of the firing.</dd>
+              </dl>
+            </div>
+          </article>
+
+          <article class="player-card">
+            <span class="player-num">III.</span>
+            <div class="player-body">
+              <span class="player-name">Microsoft (Satya Nadella)</span>
+              <p class="player-headline">$13B already deployed, exclusive cloud and IP rights.</p>
+              <dl>
+                <dt>Stated</dt>
+                <dd>Supportive of any outcome that protects the partnership.</dd>
+                <dt>Actual</dt>
+                <dd>
+                  Secure access to the talent and IP regardless of which legal shell holds them.
+                </dd>
+                <dt>Constraints</dt>
+                <dd>Antitrust scrutiny, board obligations, public market reaction.</dd>
+                <dt>BATNA</dt>
+                <dd>Absorb the talent into a Microsoft AI lab. Slower, but safe.</dd>
+                <dt>Time horizon</dt>
+                <dd>Quarters. The race outlasts any single weekend.</dd>
+              </dl>
+            </div>
+          </article>
+
+          <article class="player-card">
+            <span class="player-num">IV.</span>
+            <div class="player-body">
+              <span class="player-name">The 770 employees</span>
+              <p class="player-headline">
+                A pending tender offer, deep loyalty to Sam, mission identity.
+              </p>
+              <dl>
+                <dt>Stated</dt>
+                <dd>Continue the work, regardless of who runs the company.</dd>
+                <dt>Actual</dt>
+                <dd>
+                  Protect the upcoming tender offer that would make many of them millionaires.
+                </dd>
+                <dt>Constraints</dt>
+                <dd>Visa status for many, single-employer income, OpenAI brand on resumes.</dd>
+                <dt>BATNA</dt>
+                <dd>Microsoft would hire any of them, at the same comp, immediately.</dd>
+                <dt>Time horizon</dt>
+                <dd>Long career, but the tender offer was on the calendar.</dd>
+              </dl>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">◈</span><span>Deconstruction</span>
+        </div>
+        <div class="prose">
+          <p>
+            The board believed it was playing a one-shot principal-agent game. Hire the CEO, fire
+            the CEO, replace the CEO. Standard board prerogative under the OpenAI charter. The legal
+            authority was uncontested.
+          </p>
+          <p>
+            What was actually being played was a
+            <span class="brass-inline">coalition-formation game</span>
+            with three implicit veto players the board had not budgeted for: Microsoft, the
+            employees, and the tender offer that gave the employees a near-term financial reason to
+            act collectively.
+          </p>
+          <p>
+            The information asymmetry ran in the opposite direction from what the board assumed. The
+            board held private information about Sam (the alleged candor failures). Microsoft and
+            the employees held private information about the cost of his removal: Nadella had a
+            Saturday morning offer ready, the employees had a Slack channel and a draft letter. None
+            of that was visible from the boardroom on Friday afternoon.
+          </p>
+          <p>
+            The game was sequential. Friday: the board moves. Saturday: Microsoft moves. Sunday: the
+            employees move. Monday: the board faces a coalition it did not see forming. By Tuesday,
+            the equilibrium has flipped and the board is replaced.
+          </p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">⤳</span
+          ><span>Incentive mapping, on the board's side</span>
+        </div>
+        <div class="prose">
+          <p>
+            The board's payoff function valued mission preservation over personal continuity. Three
+            of the four members had no equity, no career risk in the conventional sense, and a
+            strong belief that the safety mandate trumped commercial momentum. They were, in their
+            own model, doing the right thing.
+          </p>
+          <p>
+            Their failure was not in values. It was in the model of the game. They did not assign a
+            payoff to the response of Microsoft or the employees, because they did not see those
+            parties as players. In a principal-agent game, the agent has no allies. In the actual
+            game, the agent had two coalitions waiting in the wings.
+          </p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">⊞</span><span>Strategy space</span>
+        </div>
+        <div class="prose">
+          <p>
+            By Sunday evening, the board's options had collapsed. Apply iterated dominance to what
+            remained.
+          </p>
+        </div>
+        <table class="strategy-table">
+          <thead>
+            <tr>
+              <th>Move</th>
+              <th>Outcome under best response from Sam, Microsoft, employees</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="dominated">
+              <td>Hold Emmett Shear as interim</td>
+              <td>
+                Mass walkout Monday morning. Microsoft hires the entire technical staff. OpenAI is a
+                brand on a building.
+              </td>
+            </tr>
+            <tr class="dominated">
+              <td>Negotiate Sam's return without restructuring</td>
+              <td>
+                Same equilibrium recurs in six months. No credibility gained. The board is replaced
+                anyway.
+              </td>
+            </tr>
+            <tr class="dominated">
+              <td>Sell the company to Microsoft outright</td>
+              <td>Antitrust risk, charter violation, employees still leave. Worst of all paths.</td>
+            </tr>
+            <tr class="dominant">
+              <td>Reinstate Sam, restructure the board, retain dignity</td>
+              <td>
+                Loss of personal seats, but the institution survives. The only path with a positive
+                payoff for the institution.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">⚖</span><span class="marker">Equilibrium</span
+          ><span>Nash, post-coalition</span>
+        </div>
+        <div class="equilibrium">
+          <p class="equilibrium-statement">
+            Sam returns<span class="sep">·</span>the board is replaced<span class="sep">·</span
+            >Microsoft observes
+          </p>
+          <span class="equilibrium-caption"
+            >Stable because the coalition (Sam, Microsoft, employees) had a credible exit. The
+            board's threat lost credibility the moment Nadella sent his Saturday email.</span
+          >
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">➤</span
+          ><span>Recommendation, retrospective for the board</span>
+        </div>
+        <div class="prose">
+          <p>
+            What follows is the move the board should have played, if their goal was mission
+            preservation rather than personal authority. The framework is symmetric: it works for
+            any board considering the removal of a charismatic founder.
+          </p>
+        </div>
+        <div class="recommendation">
+          <div class="rec-item">
+            <span class="rec-label">Primary move</span>
+            <span class="rec-text"
+              >Negotiate the exit privately first. A public firing creates a public
+              counter-coalition. The board's authority was credible only as long as the move stayed
+              inside the boardroom.</span
+            >
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Commitment device</span>
+            <span class="rec-text"
+              >Pre-secure a successor with employee credibility. Mira Murati was loyal to Sam.
+              Naming her would have signalled continuity. Naming Emmett Shear signalled
+              rupture.</span
+            >
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Signal</span>
+            <span class="rec-text"
+              >Frame the action as governance reform, with a published timeline. A clear story
+              removes Microsoft's incentive to intervene as a saviour.</span
+            >
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Coalition pre-emption</span>
+            <span class="rec-text"
+              >Brief the top fifteen technical leads before announcing. Their public support, or
+              even their public neutrality, breaks the employee coalition before it forms.</span
+            >
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Contingency</span>
+            <span class="rec-text"
+              >If Microsoft objects, have a board statement ready that frames the partnership as
+              unaffected. Ambiguity is the friend of the firing party. Silence is fatal.</span
+            >
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">Timing</span>
+            <span class="rec-text"
+              >Not on a Friday afternoon before the US Thanksgiving week. The empty calendar gives
+              the counter-coalition seventy-two free hours. Move on a Wednesday morning, with a
+              planned all-hands within four hours.</span
+            >
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">Coalition size</span>
+            <span class="stat-value">770 of 800</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Time to flip</span>
+            <span class="stat-value">96 hours</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Board members lost</span>
+            <span class="stat-value">3 of 4</span>
+          </div>
+          <div class="stat stat--accent">
+            <span class="stat-label">Verdict</span>
+            <span class="stat-value">Mission unchanged</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">↻</span><span>Dynamic adaptation</span>
+        </div>
+        <div class="prose">
+          <p>Two years on, the secondary effects are visible.</p>
+          <p>
+            Other AI labs studied the game and built different governance. Anthropic kept its
+            Long-Term Benefit Trust but paired it with founder-supportive bylaws. xAI never had a
+            non-profit veto. Mistral incorporated as a normal European company. The board veto
+            became a known liability.
+          </p>
+          <p>
+            Microsoft demonstrated that its leverage extended past the contract. The lesson
+            registered with every other lab dependent on hyperscaler compute. The next AI labs
+            raised more, faster, partly to escape the same dependency.
+          </p>
+          <p>
+            The board members, in the year after, became cautionary references rather than
+            authorities. The
+            <span class="brass-inline">reputation cost</span> turned out to be the dominant cost of
+            the entire episode, larger than any short-term governance victory could have justified.
+          </p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">❧</span><span>Counter-scenarios</span>
+        </div>
+        <div class="counter-scenarios">
+          <div class="counter-card">
+            <span class="counter-q">If Microsoft had stayed silent</span>
+            <span class="counter-a"
+              >The board would have held Sunday and Monday. Sam would have negotiated from a weaker
+              position. The new equilibrium would have been a partial reinstatement on board-set
+              conditions. The non-profit charter would have survived intact for at least another
+              year.</span
+            >
+          </div>
+          <div class="counter-card">
+            <span class="counter-q">If Ilya had not flipped</span>
+            <span class="counter-a"
+              >Sutskever's public reversal on Sunday signalled the coalition was breaking. With his
+              vote firm, the board would have held a 4 to 0 majority through Monday. The standoff
+              might have extended to a full week, with Microsoft accelerating its talent-absorption
+              plan.</span
+            >
+          </div>
+          <div class="counter-card">
+            <span class="counter-q">If the tender offer had not been pending</span>
+            <span class="counter-a"
+              >The employee coalition would have formed slower and smaller. Many of the 770
+              signatories were one share-class away from generational wealth. Without that pressure,
+              the letter probably gathers 200 signatures, not 770. The board survives.</span
+            >
+          </div>
+          <div class="counter-card">
+            <span class="counter-q">If Helen Toner had a different communication style</span>
+            <span class="counter-a"
+              >The board's stated reason ("not consistently candid") gave no path to settlement. A
+              more flexible framing would have allowed Sam a face-saving exit and the board a
+              face-saving reform. The rigidity of the message foreclosed the bargaining space.</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-label">
+          <span class="icon" aria-hidden="true">Φ</span><span>Lesson</span>
+        </div>
+        <p class="pull-quote">
+          A board's authority is
+          <span class="brass-inline">credible only inside the building</span>. The moment the move
+          becomes public, the game expands to every player with a stake in the outcome, and the new
+          equilibrium answers to the largest coalition, not the original chart.
+        </p>
+      </section>
+
+      <footer>
+        <svg
+          class="panot"
+          viewBox="-0.38 -0.37 32.75 32.76"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            fill="currentColor"
+            d="M14.22 29.79l-0.25-0.26-0.37-0.36-0.35-0.35-0.35-0.34-0.42-0.42-0.61-0.61-0.91-0.9c-0.69 0.47-1.76 0.63-2.54 0.55-0.71-0.07-1.38-0.31-1.95-0.75-0.13-0.1-0.25-0.19-0.36-0.3-0.23-0.23-0.47-0.5-0.64-0.78-0.38-0.64-0.56-1.37-0.53-2.12s0.19-1.36 0.56-2.04c-0.05-0.07-0.1-0.13-0.17-0.19l-1.88-1.87-0.15-0.15-1.44-1.44-0.62-0.62-0.43-0.44s-0.11-0.12-0.14-0.18c-0.1-0.18-0.04-0.4 0.1-0.54l3.59-3.6 1.16-1.15-0.27-0.6c-0.34-0.77-0.4-1.82-0.18-2.64 0.42-1.54 1.74-2.66 3.35-2.83 0.27-0.03 0.53 0 0.8 0l0.35 0.05c0.51 0.07 0.99 0.28 1.44 0.53l3.89-3.9 0.75-0.74c0.1-0.09 0.23-0.19 0.37-0.17s0.27 0.1 0.37 0.2l1.99 1.99 0.42 0.42 2.19 2.19s0.11-0.04 0.14-0.06c0.48-0.26 1.01-0.43 1.56-0.49 0.33-0.04 0.85-0.02 1.18 0.03 1.05 0.19 1.95 0.8 2.54 1.67 0.46 0.68 0.64 1.46 0.62 2.29-0.01 0.57-0.14 1.12-0.38 1.63l-0.2 0.41 1.38 1.37 2.15 2.15 1.26 1.27c0.19 0.19 0.16 0.46-0.01 0.63l-0.59 0.61-0.48 0.48-0.38 0.38-3.25 3.25c-0.1 0.1-0.02 0.09 0.09 0.33 0.38 0.87 0.51 1.77 0.33 2.7-0.25 1.3-1.21 2.38-2.45 2.82-0.25 0.09-0.49 0.14-0.75 0.18-0.88 0.14-1.96-0.05-2.73-0.52-0.08 0.05-0.12 0.12-0.19 0.19l-2 2-0.18 0.18-2.3 2.3c-0.12 0.12-0.29 0.19-0.43 0.15-0.2-0.05-0.33-0.2-0.46-0.34l-0.31-0.31-0.17-0.17-0.33-0.33-0.27-0.27-0.16-0.15z m4.71-22.47l0.32-0.33 0.68-0.69s0.08-0.06 0.11-0.11l-1.86-1.88-0.95-0.95-0.54-0.54-0.62-0.63s-0.06-0.05-0.07-0.03l-0.06 0.06-3.98 3.98c0.09 0.08 0.15 0.13 0.22 0.2l0.82 0.84c0.38 0.39 0.8 0.69 1.3 0.92 0.7 0.32 1.4 0.37 2.16 0.32 0.91-0.07 1.84-0.48 2.48-1.14z m3.56 12.46c-0.01-0.3-0.08-0.58-0.19-0.86-0.05-0.11-0.09-0.22-0.15-0.32-0.61-1.05-0.83-2.17-0.67-3.38 0.1-0.76 0.33-1.26 0.69-1.93 0.33-0.62 0.42-1.35 0.18-2.02-0.34-0.97-1.2-1.64-2.22-1.74-0.46-0.05-0.91 0.04-1.34 0.23-0.5 0.22-0.98 0.46-1.51 0.59-0.72 0.18-1.61 0.2-2.33 0.05-0.96-0.19-1.19-0.45-2.01-0.74-0.3-0.1-0.6-0.14-0.92-0.16-0.42 0.04-0.81 0.13-1.19 0.34-0.45 0.25-0.82 0.63-1.06 1.08-0.22 0.41-0.29 0.83-0.27 1.29s0.19 0.9 0.43 1.32c0.64 1.12 0.77 2.55 0.44 3.79-0.12 0.45-0.31 0.85-0.53 1.25-0.19 0.34-0.31 0.7-0.35 1.1-0.09 1.02 0.46 1.96 1.34 2.45 0.31 0.17 0.63 0.3 0.99 0.33 0.54 0.05 1.01-0.05 1.49-0.29 0.33-0.16 0.63-0.3 0.97-0.43 0.74-0.27 1.66-0.35 2.44-0.25 0.65 0.11 1.13 0.28 1.71 0.57 0.38 0.19 0.75 0.35 1.18 0.39 0.22 0.02 0.44 0.03 0.65 0 1.3-0.22 2.28-1.35 2.22-2.67z m1.9-1.04c0.17 0.19 0.33 0.35 0.5 0.52l0.86 0.84 0.2-0.18 3.21-3.19 0.72-0.71-4.14-4.14c-0.12 0.07-0.19 0.17-0.28 0.26l-0.74 0.73c-0.48 0.47-0.86 0.99-1.07 1.63-0.12 0.34-0.2 0.68-0.22 1.04-0.03 0.49-0.02 1.03 0.1 1.51 0.16 0.62 0.43 1.2 0.86 1.7z m-17.38 0.6c0.33-0.33 0.65-0.64 0.9-1.03 0.26-0.41 0.45-0.83 0.56-1.3 0.14-0.66 0.14-1.33 0-1.99-0.16-0.72-0.45-1.37-0.97-1.9l-1.24-1.24-2.06 2.07-2.06 2.08 1.88 1.88 0.87 0.87 1.35 1.35 0.78-0.78z m8.99 10.53l2.51-2.5 0.42-0.41 1.13-1.13-0.84-0.84c-0.28-0.28-0.54-0.55-0.86-0.79-1.53-1.08-3.86-0.95-5.19 0.39l-1.24 1.24 0.58 0.56 1.28 1.28 0.38 0.38 0.51 0.51 0.62 0.62 0.69 0.69z"
+          />
+        </svg>
+        <div class="colophon">
+          Modelled with <strong>game-theorist</strong> skill by
+          <a
+            href="https://saltsilicon.com"
+            target="_blank"
+            rel="noopener"
+            style="font-style: italic"
+            >Salt &amp; Silicon</a
+          >
+          <span class="colophon-meta">22 April 2026</span>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      document.querySelectorAll('.equilibrium').forEach((el) => {
+        el.addEventListener('pointermove', (ev) => {
+          const rect = el.getBoundingClientRect()
+          el.style.setProperty('--mx', `${ev.clientX - rect.left}px`)
+          el.style.setProperty('--my', `${ev.clientY - rect.top}px`)
+        })
+      })
+
+      const STORAGE_KEY = 'gt-theme'
+      const validThemes = ['paper', 'graph', 'kraft', 'dark']
+      const buttons = document.querySelectorAll('.theme-switch button')
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored && validThemes.includes(stored)) {
+        document.body.dataset.theme = stored
+      }
+      const sync = () => {
+        const current = document.body.dataset.theme
+        buttons.forEach((b) => {
+          b.setAttribute('aria-pressed', b.dataset.set === current ? 'true' : 'false')
+        })
+      }
+      sync()
+      buttons.forEach((b) => {
+        b.addEventListener('click', () => {
+          document.body.dataset.theme = b.dataset.set
+          localStorage.setItem(STORAGE_KEY, b.dataset.set)
+          sync()
+        })
+      })
+    </script>
+  </body>
+</html>

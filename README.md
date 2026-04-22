@@ -1,6 +1,14 @@
-# game-theorist
+<p align="center">
+  <img src="./assets/game-theorist-knight.webp" width="180" alt="game-theorist" />
+</p>
 
-**Defence-grade strategic reasoning for any competitive situation.**
+<h1 align="center">game-theorist</h1>
+
+<p align="center"><strong>Defence-grade strategic reasoning for any competitive situation.</strong></p>
+
+<p align="center"><em>A skill by <a href="https://saltsilicon.com">Salt &amp; Silicon</a></em></p>
+
+---
 
 A skill for AI coding agents. It installs a former Pentagon deterrence analyst into your session.
 Describe a situation, negotiation, pricing war, market entry, partnership, fundraising, salary talk,
@@ -220,6 +228,14 @@ Four worked case studies, each running through all six phases:
 ## Resources
 
 Books, papers, and courses that informed this skill: [`docs/resources.md`](docs/resources.md).
+
+### A note on sources
+
+This skill grew out of personal notes collected over the years inside an Obsidian vault. The
+attributions are not always traceable, the underlying material is everywhere: Schelling, Nash,
+Axelrod, Dixit and Nalebuff, plus countless YouTube lectures, blog posts, Cold War docs, and podcast
+episodes that shaped how the framework eventually settled. Treat the resources page as a starting
+point, not a citation list.
 
 ---
 
