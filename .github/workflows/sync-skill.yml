@@ -1,0 +1,48 @@
+name: Sync SKILL.md across all agent formats
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - skills/game-theorist/SKILL.md
+
+concurrency:
+  group: sync-skill
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Pull latest before making changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+
+      - name: Sync to Cursor
+        run: |
+          mkdir -p .cursor/skills/game-theorist
+          cp skills/game-theorist/SKILL.md .cursor/skills/game-theorist/SKILL.md
+
+      - name: Sync to Windsurf
+        run: |
+          mkdir -p .windsurf/skills/game-theorist
+          cp skills/game-theorist/SKILL.md .windsurf/skills/game-theorist/SKILL.md
+
+      - name: Sync to plugin
+        run: |
+          mkdir -p plugins/game-theorist/skills/game-theorist
+          cp skills/game-theorist/SKILL.md plugins/game-theorist/skills/game-theorist/SKILL.md
+
+      - name: Commit synced copies
+        run: |
+          git add .cursor/skills/ .windsurf/skills/ plugins/
+          git diff --staged --quiet || git commit -m "chore: sync SKILL.md to all agent formats [skip ci]"
+          git push
