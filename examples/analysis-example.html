@@ -1116,7 +1116,94 @@
           border: 0.5px solid var(--rule);
         }
       }
-    </style>
+      /* ================================================
+         Polish pass: a11y, touch targets, print, edge cases
+         ================================================ */
+
+      /* Focus-visible for keyboard navigation */
+      .glossary > summary:focus-visible,
+      .theme-switch button:focus-visible,
+      footer .colophon a:focus-visible {
+        outline: 2px solid var(--brass);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
+
+      /* Skip the default focus ring on click, keep for keyboard */
+      .theme-switch button:focus:not(:focus-visible) {
+        outline: none;
+      }
+
+      /* Trophy on narrow screens: don't overlap "Part I, Case Study" or h1 */
+      @media (max-width: 600px) {
+        .title {
+          padding-right: clamp(3.5rem, 14vw, 4.5rem);
+        }
+        .trophy {
+          width: 38px;
+          height: 38px;
+          top: clamp(0.85rem, 2vw, 1.25rem);
+          right: clamp(0.85rem, 2vw, 1.25rem);
+        }
+      }
+
+      /* Mobile theme switcher: bigger touch target via padding */
+      @media (max-width: 540px) {
+        .theme-switch {
+          padding: 0.5rem 0.6rem;
+          gap: 0.5rem;
+        }
+        .theme-switch button {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      /* Recommendation cards stack cleanly on mobile (already 1fr below 600px from media query) */
+
+      /* Print: hide all interactive chrome and decorations */
+      @media print {
+        .theme-switch,
+        .trophy,
+        details.glossary {
+          display: none !important;
+        }
+        body {
+          padding: 1.5cm 2cm !important;
+        }
+        .page > * {
+          opacity: 1 !important;
+          animation: none !important;
+          transform: none !important;
+        }
+        .equilibrium,
+        .stat,
+        .rec-item,
+        .counter-card,
+        .player-card {
+          break-inside: avoid;
+          box-shadow: none !important;
+          border: 0.5px solid var(--rule) !important;
+        }
+        section.block {
+          break-inside: avoid;
+        }
+      }
+
+      /* Reduce visual noise on very wide screens, prevent stretching */
+      @media (min-width: 1200px) {
+        body {
+          padding: clamp(3rem, 5vw, 6rem) clamp(2rem, 6vw, 4rem);
+        }
+      }
+
+      /* Selection inside the dark equilibrium block needs different treatment */
+      .equilibrium ::selection {
+        background: color-mix(in srgb, var(--brass-on-dark) 35%, transparent);
+        color: var(--eq-text);
+      }
+
+      </style>
   </head>
   <body data-theme="paper">
     <nav class="theme-switch" aria-label="Theme switcher">

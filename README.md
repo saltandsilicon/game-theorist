@@ -10,7 +10,7 @@
 
 ---
 
-A skill for AI coding agents. It installs a former Pentagon deterrence analyst into your session.
+A skill for AI coding agents. It installs a veteran deterrence strategist into your session.
 Describe a situation, negotiation, pricing war, market entry, partnership, fundraising, salary talk,
 co-founder split, and the model gets constructed phase by phase, through dialogue.
 
@@ -108,67 +108,60 @@ That is the loop. You answer, the analyst integrates, moves to the next phase. N
 
 ---
 
+## What the analysis looks like
+
+The analysis runs in your terminal as a structured dialogue. At any point you can ask the agent to
+export a self-contained HTML artefact — a designed document with one section per phase, themed to
+the situation. The export is optional.
+
+<p align="center">
+  <img src="./assets/screenshots/example-incentive-mapping.png" width="48%" alt="Phase 2, Incentive Mapping" />
+  <img src="./assets/screenshots/example-equilibrium.png" width="48%" alt="Phase 4, Equilibrium" />
+</p>
+<p align="center">
+  <img src="./assets/screenshots/example-dynamic-adaptation.png" width="48%" alt="Phase 6, Dynamic Adaptation" />
+  <img src="./assets/screenshots/example-lesson.png" width="48%" alt="Closing, Lesson" />
+</p>
+
+Full exported artefact: [`examples/analysis-example.html`](./examples/analysis-example.html), the
+November 2023 OpenAI board crisis run through all six phases.
+
+---
+
 ## Install
 
-### Claude Code
+Pick your agent. One command.
+
+| Agent           | Install                                                                                                           |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Claude Code** | `claude plugin marketplace add saltandsilicon/game-theorist && claude plugin install game-theorist@game-theorist` |
+| **Codex**       | `npx skills add saltandsilicon/game-theorist -a codex`                                                            |
+| **Gemini CLI**  | `gemini extensions install https://github.com/saltandsilicon/game-theorist`                                       |
+| **Cursor**      | `npx skills add saltandsilicon/game-theorist -a cursor`                                                           |
+| **Windsurf**    | `npx skills add saltandsilicon/game-theorist -a windsurf`                                                         |
+| **Cline**       | `npx skills add saltandsilicon/game-theorist -a cline`                                                            |
+| **Any other**   | `npx skills add saltandsilicon/game-theorist`                                                                     |
+
+Install once. Invoke with `/game-theorist` or describe a strategic situation.
+
+### Manual install (if you prefer)
 
 ```bash
 git clone https://github.com/saltandsilicon/game-theorist.git
 cp -r game-theorist/skills/game-theorist ~/.claude/skills/
 ```
 
-Then invoke with `/game-theorist` or describe a strategic situation.
-
-### Codex
+For Cursor, copy the rule file:
 
 ```bash
-git clone https://github.com/saltandsilicon/game-theorist.git
-cp -r game-theorist/skills/game-theorist ~/.codex/skills/
-```
-
-### Gemini CLI
-
-```bash
-git clone https://github.com/saltandsilicon/game-theorist.git
-mkdir -p skills
-cp -r game-theorist/skills/game-theorist skills/
-```
-
-Then add to your project's `GEMINI.md`:
-
-```
-@./skills/game-theorist/SKILL.md
-```
-
-### Cursor
-
-```bash
-git clone https://github.com/saltandsilicon/game-theorist.git
 cp game-theorist/.cursor/rules/game-theorist.mdc .cursor/rules/
 ```
 
-### Windsurf
-
-```bash
-git clone https://github.com/saltandsilicon/game-theorist.git
-cp -r game-theorist/.windsurf/skills/game-theorist .windsurf/skills/
-```
-
-### Cline
-
-```bash
-git clone https://github.com/saltandsilicon/game-theorist.git
-mkdir -p skills
-cp -r game-theorist/skills/game-theorist skills/
-```
-
-Then add to your `.clinerules`:
+For agents that use markdown imports (Cline, etc.), reference the skill from your config:
 
 ```
 @./skills/game-theorist/SKILL.md
 ```
-
----
 
 ## When to use it
 
