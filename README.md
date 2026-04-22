@@ -225,10 +225,12 @@ Books, papers, and courses that informed this skill: [`docs/resources.md`](docs/
 ### A note on sources
 
 This skill grew out of personal notes collected over the years inside an Obsidian vault. The
-attributions are not always traceable, the underlying material is everywhere: Schelling, Nash,
-Axelrod, Dixit and Nalebuff, plus countless YouTube lectures, blog posts, Cold War docs, and podcast
-episodes that shaped how the framework eventually settled. Treat the resources page as a starting
-point, not a citation list.
+attributions are not always traceable, the underlying material is everywhere: Schelling, Nash, plus
+countless YouTube lectures, blog posts, Cold War docs, and podcast episodes that shaped how the
+framework eventually settled. There is also an X thread from early 2026 I could not find again,
+where someone posted a game-theory prompt that inspired this skill at roughly 70-80%. If the author
+ever finds this, please reach out and I will credit you properly. Treat the resources page as a
+starting point, not a citation list.
 
 ---
 
