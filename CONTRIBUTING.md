@@ -24,14 +24,21 @@ paragraph per resource - what it covers and why it matters. No affiliate links.
 ## Adding examples
 
 Edit `docs/examples.md`. Follow the existing format: situation description, then all six phases
-applied. Use realistic but anonymised business situations.
+applied. Phase headers must read `Phase N: Name` to match SKILL.md. Use realistic but anonymised
+business situations.
 
 ## Style
 
-- British English throughout (colour, behaviour, modelling, organisation)
-- No em dashes - use commas, colons, or full stops
-- Phase headers match the skill exactly (Phase 1: Deconstruction, etc.)
-- Concrete over abstract - name the framework, the move, the condition
+- British English (colour, behaviour, modelling, organisation)
+- No em dashes. Use commas, colons, or full stops
+- No "actually", "leverage", "Additionally", "Moreover", "As such"
+- Concrete over abstract. Name the framework, the move, the condition
+
+## Before you open a PR
+
+Test the skill in at least one agent (Claude Code, Codex, or Gemini CLI) with a real situation. The
+phases should fire in order, one at a time. If the agent dumps all six at once, the SKILL.md is
+broken.
 
 ## Pull requests
 

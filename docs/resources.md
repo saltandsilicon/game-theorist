@@ -1,7 +1,7 @@
 # Resources
 
-Books, papers, and courses that informed this skill. Ordered by accessibility - start at the top if
-you're new to game theory.
+Books, papers, and courses that informed this skill. Ordered by accessibility, start at the top if
+you are new to game theory.
 
 ---
 
@@ -10,7 +10,7 @@ you're new to game theory.
 ### Accessible
 
 **The Art of Strategy** - Avinash Dixit & Barry Nalebuff (2008) The best introduction. Game theory
-for general audiences - negotiation, pricing, competition, voting. No maths required. Start here.
+for general audiences, negotiation, pricing, competition, voting. No maths required. Start here.
 
 **Thinking Strategically** - Avinash Dixit & Barry Nalebuff (1991) The original. More detailed than
 _The Art of Strategy_, with deeper treatment of the core concepts. Read this after the above.
@@ -23,7 +23,7 @@ Underrated.
 self-interested agents in repeated interactions. The tit-for-tat experiments. One of the most
 important books in the field.
 
-**Superforecasting** - Philip Tetlock & Dan Gardner (2015) Not pure game theory, but essential for
+**Superforecasting** - Philip Tetlock & Dan Gardner (2015) Adjacent to game theory. Essential for
 calibrating probability estimates and avoiding the overconfidence that ruins strategic models.
 
 ### Intermediate
@@ -60,14 +60,14 @@ Two pages. Read it. https://www.pnas.org/doi/10.1073/pnas.36.1.48
 tit-for-tat winning the round-robin tournament. Foundational.
 
 **"Job Market Signaling"** - Michael Spence (1973) The signalling paper. Education as a signal of
-ability - not as a producer of skill. Changed how we think about credentials, marketing, and costly
+ability, not as a producer of skill. Changed how we think about credentials, marketing, and costly
 commitment.
 
 **"Counterspeculation, Auctions, and Competitive Sealed Tenders"** - William Vickrey (1961) The
 second-price auction paper. Truth-telling as dominant strategy.
 
 **"An Experimental Study of Ultimatum Bargaining"** - Güth, Schmittberger & Schwarze (1982) The
-ultimatum game experiment. People reject unfair offers - even when it costs them money. The human
+ultimatum game experiment. People reject unfair offers, even when it costs them money. The human
 variable matters.
 
 ---
