@@ -36,13 +36,8 @@ jobs:
           mkdir -p .windsurf/skills/game-theorist
           cp skills/game-theorist/SKILL.md .windsurf/skills/game-theorist/SKILL.md
 
-      - name: Sync to plugin
-        run: |
-          mkdir -p plugins/game-theorist/skills/game-theorist
-          cp skills/game-theorist/SKILL.md plugins/game-theorist/skills/game-theorist/SKILL.md
-
       - name: Commit synced copies
         run: |
-          git add .cursor/skills/ .windsurf/skills/ plugins/
+          git add .cursor/skills/ .windsurf/skills/
           git diff --staged --quiet || git commit -m "chore: sync SKILL.md to all agent formats [skip ci]"
           git push
