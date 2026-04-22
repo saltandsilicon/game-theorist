@@ -110,9 +110,9 @@ That is the loop. You answer, the analyst integrates, moves to the next phase. N
 
 ## What the analysis looks like
 
-The analysis runs in your terminal as a structured dialogue. At any point you can ask the agent to
-export a self-contained HTML artefact — a designed document with one section per phase, themed to
-the situation. The export is optional.
+The analysis runs in your terminal as a structured dialogue. When all six phases are complete, the
+skill generates a self-contained HTML artefact — a designed document with one section per phase,
+themed to the situation. No extra prompt needed.
 
 <p align="center">
   <img src="./assets/screenshots/example-incentive-mapping.png" width="48%" alt="Phase 2, Incentive Mapping" />
