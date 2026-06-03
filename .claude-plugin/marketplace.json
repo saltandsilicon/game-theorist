@@ -1,0 +1,15 @@
+{
+  "name": "game-theorist",
+  "owner": {
+    "name": "Salt & Silicon",
+    "url": "https://saltsilicon.com"
+  },
+  "plugins": [
+    {
+      "name": "game-theorist",
+      "source": "./",
+      "description": "Game theory for strategy, negotiation, pricing, competition, partnerships, and fundraising.",
+      "version": "1.0.0"
+    }
+  ]
+}

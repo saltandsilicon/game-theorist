@@ -1,0 +1,22 @@
+# OS / editor noise
+.DS_Store
+.env
+*.bak
+
+# Local working files, never published
+.claude/
+00-inbox/
+handovers/
+docs/superpowers/
+autoresearch/
+_launch/
+STATE.md
+PLAN.md
+ROADMAP.md
+.gstack/
+node_modules/
+package.json
+package-lock.json
+.prettierrc
+.lintstagedrc
+.husky/

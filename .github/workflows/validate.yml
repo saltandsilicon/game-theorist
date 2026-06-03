@@ -1,0 +1,33 @@
+name: Validate skill + manifests
+
+# Quality gate before anything reaches users. Validates the SKILL.md frontmatter
+# and the plugin/marketplace manifests on every PR and push to main.
+# Evals are deliberately NOT run here: they are metered and run manually
+# (see tests/RUNNING-EVALS.md).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - skills/game-theorist/SKILL.md
+      - .claude-plugin/plugin.json
+      - .claude-plugin/marketplace.json
+      - scripts/validate.py
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Validate skill and manifests
+        run: python3 scripts/validate.py
