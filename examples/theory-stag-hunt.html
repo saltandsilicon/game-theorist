@@ -1,0 +1,1882 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The joint standard problem · game-theorist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* ---- Salt & Silicon base, light: bone paper, ink text ---- */
+        --bone: #f3f1ec; /* primary page */
+        --cream: #f5edd6; /* warm secondary */
+        --paper: #eae4d4; /* raised surfaces */
+        --ink: #1a1614; /* body text, warm near-black */
+        --ink-2: #3a352f; /* secondary prose */
+        --ink-3: #6e665b; /* tertiary, captions */
+        --ink-4: #9a9186; /* faint labels, page numbers */
+        --rule: #ddd6c6; /* hairlines on paper */
+        --rule-soft: #e6e0d1;
+
+        /* ---- Accent: institutions, governance ---- */
+        --accent: #284867;
+        --on-accent: #f3f1ec;
+        --accent-tint: color-mix(in oklch, var(--accent) 16%, transparent);
+        --accent-wash: color-mix(in oklch, var(--accent) 4.5%, transparent);
+
+        /* mapped roles */
+        --page: var(--bone);
+        --surface: var(--cream);
+        --cover-bg: var(--cream);
+        --cover-band: var(--accent);
+        --cover-ink: var(--ink);
+        --cover-ink-soft: var(--ink-3);
+        --quote-rule: var(--rule);
+
+        --serif: 'EB Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+        --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, Consolas, Monaco, monospace;
+        --sans: 'Libre Franklin', 'Gill Sans', 'Gill Sans MT', system-ui, sans-serif;
+
+        --t-caption: 16px;
+        --t-body: 19.5px;
+        --t-list: 18.5px;
+        --t-table: 18px;
+        --t-lift: 24px;
+        --t-phase: 33px;
+        --t-part: clamp(32px, 4.4vw, 40px);
+        --t-display: clamp(48px, 7.5vw, 68px);
+        --t-label: 12px;
+
+        --shadow-sheet:
+          0 1px 1px rgba(26, 22, 20, 0.04), 0 4px 10px rgba(26, 22, 20, 0.05),
+          0 18px 44px rgba(26, 22, 20, 0.07);
+        --shadow-raised:
+          0 1px 2px rgba(26, 22, 20, 0.05), 0 6px 16px rgba(26, 22, 20, 0.08),
+          0 24px 60px rgba(26, 22, 20, 0.09);
+        --shadow-inset: inset 0 0 0 1px var(--rule-soft);
+        --callout-fill: color-mix(in oklch, var(--accent) 5%, transparent);
+        --callout-edge: color-mix(in oklch, var(--accent) 14%, transparent);
+
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-theme: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      [data-theme='dark'] {
+        --void: #050403;
+        --charcoal: #0d0b08;
+        --page: var(--void);
+        --surface: var(--charcoal);
+        --paper: #15110c;
+        --ink: #ece8df;
+        --ink-2: #cbc4b6;
+        --ink-3: #9a9183;
+        --ink-4: #6f675b;
+        --rule: rgba(236, 232, 223, 0.13);
+        --rule-soft: rgba(236, 232, 223, 0.07);
+
+        --accent: #6f93b8;
+        --on-accent: #050403;
+        --accent-tint: color-mix(in oklch, var(--accent) 16%, transparent);
+        --accent-wash: color-mix(in oklch, var(--accent) 4.5%, transparent);
+
+        --cover-bg: var(--charcoal);
+        --cover-band: var(--accent);
+        --cover-ink: var(--ink);
+        --cover-ink-soft: var(--ink-3);
+        --quote-rule: rgba(236, 232, 223, 0.18);
+
+        --shadow-sheet:
+          0 1px 1px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.42),
+          0 22px 52px rgba(0, 0, 0, 0.5);
+        --shadow-raised:
+          0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 22px rgba(0, 0, 0, 0.5),
+          0 28px 68px rgba(0, 0, 0, 0.6);
+        --shadow-inset: inset 0 1px 0 rgba(236, 232, 223, 0.07);
+        --callout-fill: color-mix(in oklch, var(--accent) 5%, transparent);
+        --callout-edge: color-mix(in oklch, var(--accent) 14%, transparent);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: var(--serif);
+        font-size: var(--t-body);
+        line-height: 1.6;
+        text-wrap: pretty;
+        text-rendering: optimizeLegibility;
+        font-kerning: normal;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        transition:
+          background 0.28s var(--ease-theme),
+          color 0.28s var(--ease-theme);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 180px 180px;
+        opacity: 0.04;
+        mix-blend-mode: multiply;
+      }
+      [data-theme='dark'] body::before {
+        opacity: 0.075;
+        mix-blend-mode: screen;
+      }
+      .cover,
+      .sheet,
+      .theme-switch {
+        position: relative;
+        z-index: 2;
+      }
+
+      .cover {
+        background: var(--cover-bg);
+        color: var(--cover-ink);
+        padding: 60px 0 0;
+        border-bottom: 1px solid var(--rule);
+        transition:
+          background 0.28s var(--ease-theme),
+          color 0.28s var(--ease-theme);
+      }
+      .cover-inner {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 0 44px 0;
+      }
+      .cover-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 24px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--rule);
+      }
+      .kicker {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: var(--on-accent);
+        background: var(--cover-band);
+        padding: 7px 13px;
+        margin: 0;
+        border-radius: 2px;
+      }
+      .kicker-meta {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--cover-ink-soft);
+        white-space: nowrap;
+      }
+      .emblem {
+        text-align: center;
+        margin: 44px 0 38px;
+      }
+      .emblem img {
+        width: 184px;
+        height: auto;
+        filter: drop-shadow(0 6px 16px rgba(26, 22, 20, 0.22));
+      }
+      [data-theme='dark'] .emblem img {
+        filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55));
+      }
+      .cover-eyebrow {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 18px;
+      }
+      .cover h1 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--t-display);
+        line-height: 0.98;
+        letter-spacing: -0.02em;
+        color: var(--cover-ink);
+        margin: 0;
+        max-width: 20ch;
+        text-wrap: balance;
+      }
+      .cover .deck {
+        font-family: var(--serif);
+        font-size: clamp(21px, 2.8vw, 26px);
+        font-weight: 400;
+        line-height: 1.4;
+        color: var(--ink-2);
+        margin: 24px 0 0;
+        max-width: 38ch;
+        padding-bottom: 20px;
+      }
+      .cover-foot {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px 24px;
+        padding: 16px 0 28px;
+        border-top: 1px solid var(--rule);
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .cover-foot .by strong {
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .cover-foot .by,
+      .cover-foot .when {
+        white-space: nowrap;
+      }
+      .cover-plinth {
+        height: 10px;
+        background: var(--cover-band);
+        transition: background 0.28s var(--ease-theme);
+      }
+
+      .sheet {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 76px 56px 96px;
+        background: var(--page);
+        box-shadow: var(--shadow-sheet), var(--shadow-inset);
+        transition: box-shadow 0.28s var(--ease-theme);
+      }
+
+      .dossier {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 48px;
+        padding-bottom: 8px;
+        margin-bottom: 64px;
+      }
+      .dossier-label {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 16px;
+      }
+      .players {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        counter-reset: player;
+      }
+      .players li {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 13px 0;
+        border-top: 1px solid var(--rule-soft);
+        font-size: var(--t-list);
+        color: var(--ink-3);
+        line-height: 1.46;
+      }
+      .players li:first-child {
+        border-top: none;
+        padding-top: 0;
+      }
+      .players li::before {
+        content: counter(player, upper-roman) '.';
+        counter-increment: player;
+        font-family: var(--mono);
+        font-weight: 500;
+        color: var(--accent);
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+        min-width: 20px;
+      }
+      .players .player-name {
+        font-family: var(--serif);
+        font-weight: 600;
+        color: var(--ink);
+        display: block;
+        font-size: 19px;
+      }
+      .facts {
+        margin: 0;
+      }
+      .facts dt {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 7px;
+      }
+      .facts dd {
+        font-family: var(--serif);
+        font-size: 19px;
+        color: var(--ink-2);
+        margin: 0 0 24px;
+        line-height: 1.42;
+      }
+      .facts dd:last-child {
+        margin-bottom: 0;
+      }
+
+      .definitions {
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        padding: 28px 0 30px;
+        margin: -22px 0 64px;
+      }
+      .definitions h2 {
+        font-family: var(--serif);
+        font-size: 30px;
+        line-height: 1.05;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 10px;
+      }
+      .definitions .definitions-intro {
+        font-size: 19px;
+        line-height: 1.45;
+        color: var(--ink-2);
+        max-width: 58ch;
+        margin: 0 0 22px;
+      }
+      .definition-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 30px;
+        margin: 0;
+      }
+      .definition-grid div {
+        border-top: 1px solid var(--rule-soft);
+        padding-top: 12px;
+      }
+      .definition-grid dt {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 6px;
+      }
+      .definition-grid dd {
+        font-size: 18px;
+        line-height: 1.45;
+        color: var(--ink-2);
+        margin: 0;
+      }
+
+      .part {
+        margin: 8px 0 46px;
+      }
+      .part-tick {
+        width: 11px;
+        height: 11px;
+        border-radius: 2px;
+        background: var(--accent);
+        margin: 0 0 22px;
+      }
+      .part-kicker {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin: 0 0 10px;
+      }
+      .part h2 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--t-part);
+        line-height: 1.08;
+        letter-spacing: -0.018em;
+        color: var(--ink);
+        margin: 0 0 16px;
+        text-wrap: balance;
+      }
+      .part p {
+        font-family: var(--serif);
+        font-size: var(--t-body);
+        line-height: 1.54;
+        color: var(--ink-3);
+        margin: 0;
+        max-width: 54ch;
+      }
+
+      .phase {
+        margin-bottom: 52px;
+      }
+      .phase-head {
+        margin-bottom: 18px;
+      }
+      .phase-num {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 11px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .phase-num::before {
+        content: '';
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        background: var(--accent);
+        display: inline-block;
+      }
+      .phase h3 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--t-phase);
+        line-height: 1.14;
+        letter-spacing: -0.012em;
+        color: var(--ink);
+        margin: 0;
+        text-wrap: balance;
+      }
+      .phase-body p {
+        font-family: var(--serif);
+        font-size: var(--t-body);
+        line-height: 1.62;
+        color: var(--ink-2);
+        margin: 0 0 1.05em;
+        text-align: left;
+        hyphens: none;
+      }
+      .phase-body p:last-child {
+        margin-bottom: 0;
+      }
+      .phase-body p .lead-in {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .phase-body em {
+        font-style: normal;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .phase-body strong {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .phase-body ul {
+        list-style: none;
+        margin: 0 0 1.05em;
+        padding: 0;
+      }
+      .phase-body ul li {
+        font-family: var(--serif);
+        font-size: var(--t-list);
+        line-height: 1.54;
+        color: var(--ink-2);
+        padding: 0 0 0 24px;
+        margin: 0 0 0.78em;
+        position: relative;
+      }
+      .phase-body ul li::before {
+        content: '';
+        position: absolute;
+        left: 2px;
+        top: 0.62em;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .phase.equilibrium .phase-body {
+        border-top: 1px solid var(--accent);
+        border-bottom: 1px solid var(--rule);
+        padding: 26px 0 6px;
+        margin-top: 4px;
+      }
+      .phase.equilibrium .phase-body p:first-child {
+        font-size: var(--t-lift);
+        line-height: 1.34;
+        color: var(--ink);
+        text-align: left;
+        font-weight: 500;
+      }
+      .phase.equilibrium .phase-body p:last-child {
+        font-size: var(--t-list);
+      }
+
+      .table-wrap {
+        margin: 14px 0 1.2em;
+        border: 1px solid var(--callout-edge);
+        border-radius: 6px;
+        background: var(--page);
+        box-shadow: var(--shadow-sheet);
+        overflow: hidden;
+        transition: box-shadow 0.28s var(--ease-theme);
+      }
+      .phase-body table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-family: var(--serif);
+        font-size: var(--t-table);
+        margin: 0;
+      }
+      .phase-body th {
+        text-align: left;
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--callout-fill);
+        padding: 15px 22px;
+        border-bottom: 1px solid var(--callout-edge);
+        vertical-align: bottom;
+      }
+      .phase-body td {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--rule-soft);
+        color: var(--ink-2);
+        vertical-align: top;
+        line-height: 1.5;
+        text-align: left;
+      }
+      .phase-body tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .phase-body td:first-child {
+        font-weight: 600;
+        color: var(--ink);
+        width: 30%;
+      }
+      .phase-body td:nth-child(2),
+      .phase-body td:nth-child(3) {
+        width: 11%;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .phase-body tr.dominated td {
+        opacity: 0.52;
+      }
+      .phase-body tr.dominated td:first-child {
+        text-decoration: line-through;
+      }
+      .phase-body tr.dominant td:first-child {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .figure {
+        margin: 22px 0 14px;
+        padding: 30px 32px 26px;
+        border: 1px solid var(--callout-edge);
+        border-radius: 6px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sheet);
+        transition: box-shadow 0.28s var(--ease-theme);
+      }
+      .figure-label {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .figure-label::before {
+        content: '';
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        background: var(--accent);
+        display: inline-block;
+      }
+      .figure svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+      .plot-axis {
+        stroke: var(--ink-3);
+        stroke-width: 1;
+      }
+      .plot-grid {
+        stroke: var(--rule);
+        stroke-width: 1;
+      }
+      .plot-quadrant {
+        fill: var(--accent-wash);
+        stroke: none;
+      }
+      .plot-divider {
+        stroke: var(--rule);
+        stroke-width: 1;
+        stroke-dasharray: 2 4;
+      }
+      .plot-axis-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        fill: var(--ink-3);
+      }
+      .plot-pole {
+        font-family: var(--mono);
+        font-size: 9px;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        fill: var(--ink-4);
+      }
+      .plot-zone {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        fill: var(--accent);
+      }
+      .plot-dot {
+        fill: none;
+        stroke: var(--ink);
+        stroke-width: 1.4;
+      }
+      .plot-dot.is-focal {
+        fill: var(--accent);
+        stroke: var(--accent);
+      }
+      .plot-dot.is-high {
+        fill: var(--accent);
+        fill-opacity: 0.45;
+        stroke: var(--accent);
+      }
+      .plot-name {
+        font-family: var(--serif);
+        font-size: 16px;
+        fill: var(--ink);
+      }
+      .plot-name.is-focal {
+        font-weight: 600;
+        fill: var(--accent);
+      }
+      .plot-name.is-muted {
+        fill: var(--ink-3);
+      }
+      [data-theme='dark'] .plot-dot {
+        stroke: var(--ink-2);
+      }
+      .figure-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 24px;
+        margin: 20px 0 0;
+        padding: 14px 0 0;
+        border-top: 1px solid var(--rule);
+      }
+      .figure-legend .key {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--ink-3);
+      }
+      .figure-legend .swatch {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        border: 1.4px solid var(--ink);
+        background: transparent;
+      }
+      .figure-legend .swatch.focal {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .figure-legend .swatch.high {
+        background: var(--accent);
+        opacity: 0.45;
+        border-color: var(--accent);
+      }
+      [data-theme='dark'] .figure-legend .swatch {
+        border-color: var(--ink-2);
+      }
+      .figure-caption {
+        font-family: var(--serif);
+        font-size: var(--t-caption);
+        line-height: 1.5;
+        color: var(--ink-3);
+        margin: 18px 0 0;
+        max-width: 60ch;
+      }
+      .figure-caption strong {
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      .pullquote {
+        position: relative;
+        margin: 16px 0 52px;
+        padding: 32px 36px 30px 40px;
+        background: var(--callout-fill);
+        border: 1px solid var(--callout-edge);
+        border-radius: 6px;
+        box-shadow: var(--shadow-raised);
+        overflow: hidden;
+        transition:
+          box-shadow 0.28s var(--ease-theme),
+          background 0.28s var(--ease-theme);
+      }
+
+      .pullquote p {
+        font-family: var(--serif);
+        font-style: normal;
+        font-weight: 500;
+        font-size: clamp(24px, 3.4vw, 30px);
+        line-height: 1.36;
+        color: var(--ink);
+        margin: 0;
+        max-width: 32ch;
+        text-wrap: balance;
+      }
+      .pullquote cite {
+        display: block;
+        font-family: var(--serif);
+        font-style: normal;
+        font-variant-caps: small-caps;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        margin-top: 20px;
+      }
+
+      .lesson {
+        margin-top: 8px;
+        padding: 30px 0 0;
+        border-top: 2px solid var(--accent);
+      }
+      .lesson .phase-num {
+        margin-bottom: 12px;
+      }
+      .lesson .phase-num::before {
+        display: none;
+      }
+      .lesson p {
+        font-family: var(--serif);
+        font-size: var(--t-lift);
+        line-height: 1.44;
+        color: var(--ink);
+        margin: 0;
+        max-width: 48ch;
+        text-wrap: pretty;
+      }
+      .lesson em {
+        font-style: normal;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      footer {
+        margin-top: 64px;
+        padding-top: 28px;
+        border-top: 1px solid var(--rule);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+      footer .mark {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      footer .panot {
+        width: 24px;
+        height: 24px;
+        color: var(--accent);
+        flex: 0 0 auto;
+      }
+      footer .colophon {
+        font-family: var(--serif);
+        font-size: var(--t-caption);
+        color: var(--ink-2);
+        line-height: 1.5;
+      }
+      footer .colophon strong {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      footer .colophon a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid var(--rule);
+      }
+      footer .colophon a:hover {
+        border-bottom-color: var(--accent);
+      }
+      footer .pagemark {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-4);
+        letter-spacing: 0.08em;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      footer .pagemark a {
+        color: var(--ink-4);
+        text-decoration: none;
+        border-bottom: 1px solid var(--rule);
+        transition: color 0.15s;
+      }
+      footer .pagemark a:hover {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+
+      /* ---------- Theme switch: sun / moon icon buttons in a skeuomorphic
+         groove. The container is a recessed track (inset shadow); the
+         active button is a raised key (drop shadow + inset highlight).
+         Hover gated to real pointers only. ---------- */
+      .theme-switch {
+        position: fixed;
+        top: 22px;
+        right: 22px;
+        z-index: 50;
+        display: flex;
+        gap: 3px;
+        padding: 4px;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--rule);
+        box-shadow:
+          inset 0 1px 3px rgba(26, 22, 20, 0.14),
+          inset 0 0 0 0.5px rgba(26, 22, 20, 0.06),
+          0 1px 0 rgba(255, 255, 255, 0.7);
+        transition:
+          box-shadow 0.28s var(--ease-theme),
+          background 0.28s var(--ease-theme),
+          border-color 0.28s var(--ease-theme);
+      }
+      [data-theme='dark'] .theme-switch {
+        box-shadow:
+          inset 0 1px 3px rgba(0, 0, 0, 0.35),
+          inset 0 0 0 0.5px rgba(0, 0, 0, 0.2),
+          0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .theme-switch button {
+        appearance: none;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--ink-3);
+        border-radius: 7px;
+        padding: 0;
+        transform: scale(1);
+        transition:
+          background 0.18s var(--ease-out),
+          color 0.18s var(--ease-out),
+          box-shadow 0.18s var(--ease-out),
+          transform 0.14s var(--ease-out);
+      }
+      .theme-switch button[aria-pressed='true'] {
+        background: var(--accent);
+        color: var(--on-accent);
+        box-shadow:
+          0 1px 3px rgba(26, 22, 20, 0.25),
+          0 0.5px 0 rgba(26, 22, 20, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+      [data-theme='dark'] .theme-switch button[aria-pressed='true'] {
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .theme-switch button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        z-index: 1;
+      }
+      .theme-switch button:active {
+        transform: scale(0.94);
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .theme-switch button:not([aria-pressed='true']):hover {
+          color: var(--ink);
+          background: var(--paper);
+          box-shadow: 0 1px 2px rgba(26, 22, 20, 0.1);
+        }
+      }
+
+      ::selection {
+        background: var(--accent-tint);
+        color: var(--ink);
+      }
+
+      @page {
+        size: A4;
+        margin: 18mm 20mm 20mm;
+        @bottom-center {
+          content: counter(page);
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9pt;
+          color: #9a9186;
+        }
+      }
+      @media print {
+        body {
+          background: var(--bone);
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        body::before {
+          display: none;
+        }
+        .cover {
+          padding: 28px 0 0;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .cover-inner,
+        .sheet {
+          max-width: 100%;
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .sheet {
+          padding-top: 44px;
+          box-shadow: none;
+        }
+        .figure,
+        .table-wrap,
+        .pullquote {
+          box-shadow: none;
+        }
+        .emblem img {
+          width: 150px;
+        }
+        .theme-switch {
+          display: none;
+        }
+        .part {
+          break-before: page;
+          break-after: avoid;
+        }
+        .phase,
+        .lesson,
+        .dossier,
+        .pullquote,
+        .figure {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          font-size: 18px;
+        }
+        .cover {
+          padding: 40px 0 0;
+        }
+        .cover-inner,
+        .sheet {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .sheet {
+          box-shadow: none;
+        }
+        .figure {
+          padding: 22px 20px 20px;
+        }
+        .phase-body th,
+        .phase-body td {
+          padding: 14px 16px;
+        }
+        .pullquote {
+          padding: 26px 24px 24px 28px;
+        }
+        .cover-top {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .cover-foot {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .emblem img {
+          width: 138px;
+        }
+        .dossier {
+          grid-template-columns: 1fr;
+          gap: 36px;
+        }
+        .definition-grid {
+          grid-template-columns: 1fr;
+        }
+        .phase h3,
+        .part h2 {
+          font-size: 25px;
+        }
+        .phase-body p {
+          text-align: left;
+        }
+        .plot-name {
+          font-size: 13px;
+        }
+        .theme-switch {
+          top: 14px;
+          right: 14px;
+        }
+        footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+      }
+
+      .reveal-on .part,
+      .reveal-on .phase,
+      .reveal-on .figure,
+      .reveal-on .table-wrap,
+      .reveal-on .callout,
+      .reveal-on .lesson {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+          opacity 0.7s var(--ease-out),
+          transform 0.7s var(--ease-out);
+      }
+      .reveal-on .is-in {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-on .players li {
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.5s var(--ease-out),
+          transform 0.5s var(--ease-out);
+      }
+      .reveal-on .players.is-in li {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-on .players.is-in li:nth-child(2) {
+        transition-delay: 45ms;
+      }
+      .reveal-on .players.is-in li:nth-child(3) {
+        transition-delay: 90ms;
+      }
+      .reveal-on .players.is-in li:nth-child(4) {
+        transition-delay: 135ms;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .reveal-on .part,
+        .reveal-on .phase,
+        .reveal-on .figure,
+        .reveal-on .table-wrap,
+        .reveal-on .callout,
+        .reveal-on .lesson,
+        .reveal-on .players li {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+      @media print {
+        .reveal-on .part,
+        .reveal-on .phase,
+        .reveal-on .figure,
+        .reveal-on .table-wrap,
+        .reveal-on .callout,
+        .reveal-on .lesson,
+        .reveal-on .players li {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
+
+      /* ---------- Differentiated reveals per phase ----------------------
+         Override the base .phase rule via source order (same specificity).
+         .phase-N.is-in has one extra class → wins over .reveal-on .is-in.
+         Easing: --ease-out for opacity, quint/quart for transforms.
+         -------------------------------------------------------------- */
+      .reveal-on .phase-1,
+      .reveal-on .phase-6 { transform: none; }          /* pure fade  */
+      .reveal-on .phase-6 { transition-duration: 0.82s; } /* settled    */
+      .reveal-on .phase-2 { transform: translateX(-14px); } /* lateral scan */
+      .reveal-on .phase-3 { transform: translateY(-12px); } /* descends   */
+      .reveal-on .phase-4 {
+        transform: scale(0.97);                           /* convergence */
+        transition:
+          opacity 0.62s var(--ease-out),
+          transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .reveal-on .phase-1.is-in,
+      .reveal-on .phase-2.is-in,
+      .reveal-on .phase-3.is-in,
+      .reveal-on .phase-4.is-in,
+      .reveal-on .phase-5.is-in,
+      .reveal-on .phase-6.is-in { opacity: 1; transform: none; }
+
+      /* Parts: slow pure fade, no drift */
+      .reveal-on .part { transform: none; transition: opacity 0.55s var(--ease-out); }
+      .reveal-on .part.is-in { opacity: 1; transform: none; }
+
+      /* Figure: focus-scale in */
+      .reveal-on .figure {
+        transform: scale(0.99);
+        transition:
+          opacity 0.7s var(--ease-out),
+          transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      /* Pullquote: add to reveal system */
+      .reveal-on .pullquote {
+        opacity: 0;
+        transform: scale(0.98);
+        transition:
+          opacity 0.68s var(--ease-out),
+          transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .reveal-on .pullquote.is-in { opacity: 1; transform: none; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal-on .phase-1, .reveal-on .phase-2, .reveal-on .phase-3,
+        .reveal-on .phase-4, .reveal-on .phase-5, .reveal-on .phase-6,
+        .reveal-on .pullquote {
+          opacity: 1; transform: none; transition: none;
+        }
+      }
+      @media print {
+        .reveal-on .pullquote { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+    <script>
+      ;(function () {
+        var pref = null
+        try { pref = localStorage.getItem('gt-theme') } catch (e) {}
+        if (!pref && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-theme', 'dark')
+        }
+      })()
+      document.documentElement.classList.add('reveal-on')
+    </script>
+  </head>
+  <body>
+    <nav class="theme-switch" aria-label="Theme">
+      <button type="button" data-set="light" aria-pressed="true" aria-label="Light mode">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="7.05" y2="16.95"/><line x1="16.95" y1="7.05" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <button type="button" data-set="dark" aria-pressed="false" aria-label="Dark mode">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </nav>
+
+    <header class="cover">
+      <div class="cover-inner">
+        <div class="cover-top">
+          <p class="kicker">Game-Theorist · Six-Phase Analysis</p>
+          <span class="kicker-meta">Simultaneous · 2 players · coordination game</span>
+        </div>
+        <div class="emblem">
+          <img
+            src="../assets/game-theorist-knight.webp"
+            alt="Game-theorist brass knight emblem"
+            onerror="this.style.display = 'none'"
+          />
+        </div>
+        <p class="cover-eyebrow">Foundational case · Stag Hunt</p>
+        <h1>The joint standard problem</h1>
+        <p class="deck">
+          Two startups, one market, and the trust problem that separates the good equilibrium from
+          the safe one.
+        </p>
+        <div class="cover-foot">
+          <span class="by">Modelled with <strong>game-theorist</strong> · Salt &amp; Silicon</span>
+          <span class="when">Classic coordination game · canonical form</span>
+        </div>
+      </div>
+      <div class="cover-plinth"></div>
+    </header>
+
+    <main class="sheet">
+      <section class="dossier">
+        <div>
+          <p class="dossier-label">Players</p>
+          <ul class="players">
+            <li>
+              <span class="player-name">Axis</span> established player, platform infrastructure,
+              risk-averse board
+            </li>
+            <li>
+              <span class="player-name">Lumen</span> growth-stage challenger, distribution
+              advantage, higher risk appetite
+            </li>
+          </ul>
+        </div>
+        <div>
+          <dl class="facts">
+            <dt>Game type</dt>
+            <dd>Simultaneous, 2 players, incomplete information about the other's beliefs</dd>
+            <dt>Lead framework</dt>
+            <dd>
+              Multiple Nash equilibria, risk-dominance vs. payoff-dominance, focal point theory
+            </dd>
+          </dl>
+        </div>
+      </section>
+
+      <section class="definitions" aria-labelledby="definitions-title">
+        <h2 id="definitions-title">Terms in plain English</h2>
+        <p class="definitions-intro">
+          Read this first if the theory words are new. The analysis uses a few technical terms, but
+          the ideas underneath are simple.
+        </p>
+        <dl class="definition-grid">
+          <div>
+            <dt>Player</dt>
+            <dd>
+              Someone whose choices can change the outcome: a company, person, regulator, buyer,
+              or rival.
+            </dd>
+          </div>
+          <div>
+            <dt>Strategy</dt>
+            <dd>
+              A move a player can make. Raise price, hold price, cooperate, defect, wait, signal,
+              commit.
+            </dd>
+          </div>
+          <div>
+            <dt>Payoff</dt>
+            <dd>What a player gets from an outcome. The number means preference, not always money.</dd>
+          </div>
+          <div>
+            <dt>Dominant strategy</dt>
+            <dd>A move that beats the alternatives no matter what the other player does.</dd>
+          </div>
+          <div>
+            <dt>Nash equilibrium</dt>
+            <dd>An outcome where no player can improve their position by changing their move alone.</dd>
+          </div>
+          <div>
+            <dt>Repeated game</dt>
+            <dd>The same players meet again. Reputation, punishment, and trust start to matter.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- ============ PART I)  ·  Phases 1 to 2 ============ -->
+      <section class="part">
+        <div class="part-tick"></div>
+        <p class="part-kicker">Part I · Phases 1 to 2</p>
+        <h2>The coordination problem</h2>
+        <p>
+          Unlike a dilemma, this game has two Nash equilibria. The question is not whether
+          cooperation is rational, but whether each player believes the other will cooperate.
+        </p>
+      </section>
+
+      <section class="phase phase-1" id="phase-1">
+        <div class="phase-head">
+          <p class="phase-num">Phase 1</p>
+          <h3>Deconstruction</h3>
+        </div>
+        <div class="phase-body">
+          <p>
+            <span class="lead-in"
+              >Two technology companies, one shared opportunity, and a structural tension that game
+              theory has studied since Rousseau.</span
+            >
+            Axis is an established platform infrastructure player with a risk-averse board, an
+            installed base, and a strong preference for predictable outcomes. Lumen is a
+            growth-stage challenger with a distribution advantage, faster iteration cycles, and a
+            higher risk tolerance baked into its investor expectations. Their asymmetry matters
+            because it shapes how each player reads uncertainty about the other's choice.
+          </p>
+          <p>
+            Each firm faces exactly two strategies: commit to a
+            <em>joint interoperability standard</em> (Hunt Stag) or ship a
+            <em>proprietary, incompatible system</em> (Hunt Hare). The metaphors come from
+            Jean-Jacques Rousseau's parable: a group of hunters can cooperate to catch a stag, which
+            feeds everyone, or each can defect to catch a hare independently, which feeds only that
+            hunter. The stag requires everyone to commit; the hare does not.
+          </p>
+          <p>
+            The payoff structure sets this apart from the prisoner's dilemma. In a prisoner's
+            dilemma, defection is a dominant strategy: whatever the other player does, you are
+            better off defecting. Here, neither strategy dominates. If both firms commit to the
+            joint standard, each earns a payoff of 8. If one defects while the other commits, the
+            defector earns 3 and the cooperator earns 0. If both go proprietary, each earns 3.
+            Cooperation is not dominated; it is simply risky. The risk is that you bear the full
+            coordination cost alone if the other player does not show up.
+          </p>
+          <p>
+            The stag, in this case, is a shared interoperability standard that opens a large joint
+            market. The hare is a proprietary system that captures a smaller but certain niche. Both
+            are rational choices. The game does not resolve through dominance analysis. It resolves
+            through belief.
+          </p>
+        </div>
+      </section>
+
+      <section class="phase phase-2" id="phase-2">
+        <div class="phase-head">
+          <p class="phase-num">Phase 2</p>
+          <h3>Incentive Mapping</h3>
+        </div>
+        <div class="phase-body">
+          <p>
+            <span class="lead-in"
+              >Each player's optimal move depends entirely on what they believe the other player
+              will do.</span
+            >
+            This is the defining feature of the coordination game, and the source of its difficulty.
+            There is no calculation that resolves the question without a prior belief about the
+            other's action.
+          </p>
+          <p>
+            Consider Axis. If Lumen commits to the joint standard, Axis earns 8 by joining and only
+            3 by going proprietary. The correct response is to join. If Lumen goes proprietary, Axis
+            earns 0 by joining and 3 by going solo. The correct response is to go proprietary. The
+            payoff from each of Axis's strategies is entirely conditional on Lumen's choice. The
+            same logic applies symmetrically to Lumen. Neither player has a dominant strategy. The
+            game is genuinely contingent on mutual belief.
+          </p>
+          <p>
+            The asymmetry between the two firms enters here in a subtle way. Axis, with its
+            risk-averse board, weights the (0,3) outcome heavily. The prospect of bearing the full
+            coordination cost while Lumen captures its niche is the nightmare scenario. This
+            risk-aversion pushes Axis toward the safer equilibrium. Lumen, with higher risk
+            tolerance and a growth mandate from its investors, can absorb a bad outcome more easily.
+            Lumen is therefore more willing to commit first, which is strategically significant for
+            Phase 5.
+          </p>
+          <p>
+            BATNA analysis reinforces this. Axis's outside option is its existing proprietary
+            infrastructure, which already generates revenue. Going proprietary is not a failure for
+            Axis; it is a defensible fallback. Lumen's outside option is weaker: without a standard,
+            it faces a fragmented market and higher customer acquisition costs. Lumen therefore has
+            more to gain from the joint standard and more to lose from the stalemate of mutual
+            defection.
+          </p>
+
+          <figure class="figure">
+            <figcaption class="figure-label">
+              Figure 1 · Axis commitment against Lumen commitment
+            </figcaption>
+            <svg
+              viewBox="0 0 640 440"
+              role="img"
+              aria-label="A quadrant plot of Axis commitment against Lumen commitment. The upper-right quadrant is shaded, representing the stag equilibrium where both firms commit to the joint standard. The lower-left quadrant represents the hare equilibrium. Four strategy combinations are plotted as named points."
+            >
+              <!-- shaded quadrant: upper-right, both high commitment, the stag -->
+              <rect class="plot-quadrant" x="328" y="40" width="264" height="170" />
+              <text class="plot-zone" x="582" y="60" text-anchor="end">Stag (8,8)</text>
+
+              <!-- lower-left label, unshaded -->
+              <text class="plot-zone" x="70" y="376" text-anchor="start">Hare (3,3)</text>
+
+              <!-- frame + mid dividers -->
+              <line class="plot-divider" x1="328" y1="40" x2="328" y2="380" />
+              <line class="plot-divider" x1="64" y1="210" x2="592" y2="210" />
+
+              <!-- axes with arrowheads -->
+              <defs>
+                <marker
+                  id="arrow"
+                  viewBox="0 0 10 10"
+                  refX="8"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M0 0 L9 5 L0 10 z" fill="currentColor" />
+                </marker>
+              </defs>
+              <g style="color: var(--ink-3)">
+                <line
+                  class="plot-axis"
+                  x1="64"
+                  y1="380"
+                  x2="600"
+                  y2="380"
+                  marker-end="url(#arrow)"
+                />
+                <line class="plot-axis" x1="64" y1="380" x2="64" y2="34" marker-end="url(#arrow)" />
+              </g>
+
+              <!-- axis labels -->
+              <text class="plot-axis-label" x="328" y="416" text-anchor="middle">
+                Axis commitment
+              </text>
+              <text
+                class="plot-axis-label"
+                x="-210"
+                y="22"
+                text-anchor="middle"
+                transform="rotate(-90)"
+              >
+                Lumen commitment
+              </text>
+
+              <!-- poles -->
+              <text class="plot-pole" x="64" y="398" text-anchor="start">Low</text>
+              <text class="plot-pole" x="592" y="398" text-anchor="end">High</text>
+              <text
+                class="plot-pole"
+                x="58"
+                y="380"
+                text-anchor="end"
+                transform="rotate(-90 58 380)"
+              >
+                Low
+              </text>
+              <text
+                class="plot-pole"
+                x="58"
+                y="44"
+                text-anchor="start"
+                transform="rotate(-90 58 44)"
+              >
+                High
+              </text>
+
+              <!-- (Joint, Joint): upper-right, both commit, Pareto optimal equilibrium, focal -->
+              <circle class="plot-dot is-focal" cx="494" cy="100" r="8" />
+              <text class="plot-name is-focal" x="494" y="88" text-anchor="middle">
+                Both commit
+              </text>
+
+              <!-- (Prop, Prop): lower-left, both solo, risk-dominant equilibrium -->
+              <circle class="plot-dot is-high" cx="178" cy="330" r="7" />
+              <text class="plot-name" x="178" y="318" text-anchor="middle">Both solo</text>
+
+              <!-- (Joint, Prop): upper-left, Axis exposed -->
+              <circle class="plot-dot" cx="178" cy="100" r="7" />
+              <text class="plot-name is-muted" x="178" y="88" text-anchor="middle">
+                Axis exposed
+              </text>
+
+              <!-- (Prop, Joint): lower-right, Lumen exposed -->
+              <circle class="plot-dot" cx="494" cy="330" r="7" />
+              <text class="plot-name is-muted" x="494" y="348" text-anchor="middle">
+                Lumen exposed
+              </text>
+            </svg>
+            <div class="figure-legend">
+              <span class="key"><span class="swatch focal"></span>Pareto optimal equilibrium</span>
+              <span class="key"><span class="swatch high"></span>Risk-dominant equilibrium</span>
+              <span class="key"><span class="swatch"></span>Unstable outcome</span>
+            </div>
+            <p class="figure-caption">
+              <strong>Figure 1.</strong> Both Nash equilibria plotted. The upper-right quadrant
+              (stag) is Pareto optimal; the lower-left (hare) is risk-dominant. Axis alone cannot
+              pull the game to the better outcome. The two unstable off-diagonal outcomes, where one
+              firm is exposed, are the outcomes each player fears most.
+            </p>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ============ PART II  ·  Phases 3 to 4 ============ -->
+      <section class="part">
+        <div class="part-tick"></div>
+        <p class="part-kicker">Part II · Phases 3 to 4</p>
+        <h2>The strategy space and the equilibria</h2>
+        <p>
+          With both equilibria stable, the game resolves not through dominance analysis but through
+          beliefs, communication, and focal points.
+        </p>
+      </section>
+
+      <section class="phase phase-3" id="phase-3">
+        <div class="phase-head">
+          <p class="phase-num">Phase 3</p>
+          <h3>Strategy Space</h3>
+        </div>
+        <div class="phase-body">
+          <p>
+            <span class="lead-in"
+              >Four strategy combinations exist, and none can be eliminated by dominance.</span
+            >
+            This is the structural difference from the prisoner's dilemma. In that game, the
+            dominant strategy analysis produces a unique surviving strategy for each player. Here,
+            no row is dominated and no column is dominated. Both strategies survive for each player.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Strategy pair</th>
+                  <th>Axis payoff</th>
+                  <th>Lumen payoff</th>
+                  <th>Stability</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="dominant">
+                  <td>Joint Standard, Joint Standard</td>
+                  <td>8</td>
+                  <td>8</td>
+                  <td>Nash equilibrium, Pareto optimal</td>
+                </tr>
+                <tr>
+                  <td>Joint Standard, Proprietary</td>
+                  <td>0</td>
+                  <td>3</td>
+                  <td>Unstable, not an equilibrium</td>
+                </tr>
+                <tr>
+                  <td>Proprietary, Joint Standard</td>
+                  <td>3</td>
+                  <td>0</td>
+                  <td>Unstable, not an equilibrium</td>
+                </tr>
+                <tr>
+                  <td>Proprietary, Proprietary</td>
+                  <td>3</td>
+                  <td>3</td>
+                  <td>Nash equilibrium, risk-dominant</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            The two off-diagonal outcomes are not equilibria: in each case, the player who committed
+            to the joint standard would gain by unilaterally switching to proprietary (earning 3
+            instead of 0). These outcomes are therefore unstable. The two diagonal outcomes are the only ones that survive as Nash equilibria.
+          </p>
+          <p>
+            The critical distinction is between <em>payoff dominance</em> and
+            <em>risk dominance</em>. (Joint Standard, Joint Standard) is payoff-dominant: it
+            produces the highest total payoff and the highest individual payoffs for both players.
+            Neither player can do better by switching, and the outcome is Pareto optimal.
+            (Proprietary, Proprietary) is risk-dominant: it is the safer choice under uncertainty
+            about the other player's action. If Axis assigns even probability to Lumen's two
+            strategies, the expected value of going proprietary (3) exceeds the expected value of
+            going joint (4, but conditional on Lumen also committing). Risk-dominance is not about
+            who earns more; it is about which equilibrium is less exposed to the fear that the other
+            player might not show up.
+          </p>
+          <p>
+            Both equilibria are self-enforcing once reached, which is why the game cannot be resolved by reasoning alone. Logic confirms both are stable but offers no basis for choosing between them.
+          </p>
+        </div>
+      </section>
+
+      <blockquote class="pullquote">
+        <p>The better equilibrium exists. Getting there is a problem of trust, not of reasoning.</p>
+        <cite>Stag Hunt, the coordination game</cite>
+      </blockquote>
+
+      <section class="phase equilibrium phase-4" id="phase-4">
+        <div class="phase-head">
+          <p class="phase-num">Phase 4</p>
+          <h3>Equilibrium</h3>
+        </div>
+        <div class="phase-body">
+          <p>
+            Two pure-strategy Nash equilibria:
+            <strong>(Joint Standard, Joint Standard) at payoffs 8,8</strong> and
+            <strong>(Proprietary, Proprietary) at payoffs 3,3</strong>. Neither player wants to
+            deviate unilaterally from either equilibrium once both are locked in.
+          </p>
+          <p>
+            Verification at (Joint Standard, Joint Standard): if Axis switches to Proprietary while Lumen stays with Joint Standard, Axis earns 3 instead of 8, giving it reason to stay put. Lumen faces the same calculation in reverse. The equilibrium holds. At (Proprietary, Proprietary): if Axis defects to Joint Standard while Lumen stays Proprietary, Axis earns 0 instead of 3. Lumen's calculation is symmetric. This equilibrium holds on the same logic.
+          </p>
+          <p>
+            The equilibria are stable but not equal in value. The game has a selection problem that
+            logic cannot resolve. A player who reasons that the other is rational, and that the
+            other also reasons this way, still cannot determine which equilibrium to expect. Mutual
+            knowledge of rationality does not select between two Nash equilibria in a coordination
+            game. What selects between them is the set of shared expectations, history,
+            communication, and salience that exist between the players before the game is played.
+          </p>
+          <p>
+            There is also a mixed-strategy Nash equilibrium, in which each player randomises between
+            Joint Standard and Proprietary with a probability that makes the other player
+            indifferent. This mixed equilibrium exists but is unstable and yields lower expected
+            payoffs than either pure equilibrium. It is not a recommendation; it is a theoretical
+            lower bound on what happens when coordination fails completely and neither player has a
+            reliable belief about the other.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ PART III  ·  Phases 5 to 6 ============ -->
+      <section class="part">
+        <div class="part-tick"></div>
+        <p class="part-kicker">Part III · Phases 5 to 6</p>
+        <h2>Engineering the better equilibrium</h2>
+        <p>
+          The Pareto-optimal equilibrium does not select itself. Reaching it requires deliberate
+          coordination devices: pre-play communication, credible commitment, and shared salience.
+        </p>
+      </section>
+
+      <section class="phase phase-5" id="phase-5">
+        <div class="phase-head">
+          <p class="phase-num">Phase 5</p>
+          <h3>Recommendation</h3>
+        </div>
+        <div class="phase-body">
+          <p>
+            <span class="lead-in"
+              >The concrete move is not a strategic action inside the game but a coordination
+              investment before the game resolves.</span
+            >
+            Because both equilibria are Nash equilibria, the way to reach the better one is to shift
+            the shared expectation of both players toward it. This requires three types of
+            intervention: a credible commitment, a visible first mover, and an off-ramp that removes
+            the fear of the worst outcome.
+          </p>
+          <p>
+            First, schedule a joint declaration of intent with a real cost to each party. A low-cost
+            announcement that either firm could retract cheaply does not move beliefs. A joint
+            roadmap published to potential customers, a shared developer portal, or a co-signed
+            letter to a standards body all carry a reputational cost if either firm defects
+            afterward. The cost of the signal is what makes it credible. Cheap talk does not raise
+            the probability that Axis will commit, because Lumen knows it can be ignored. Costly
+            signalling does.
+          </p>
+          <p>
+            Second, Lumen should commit first and make the commitment visible. Lumen has the higher
+            risk tolerance and the stronger incentive to reach the (8,8) outcome. A unilateral
+            visible commitment from Lumen raises the probability that Axis will follow: if Lumen is
+            already committed, Axis's expected payoff from joining is no longer 4 (half of 0 plus
+            half of 8) but closer to 8, because the uncertainty about Lumen's action has been
+            resolved. Lumen absorbs the risk of first-mover exposure; in return, it shifts the
+            game's focal point decisively toward (Joint Standard, Joint Standard).
+          </p>
+          <p>
+            Third, build an off-ramp. The fear of the (0,3) outcome is what drives risk-averse
+            players like Axis toward the hare. An explicit agreement that if only one party commits
+            by a defined date, both revert to proprietary development without penalty removes this
+            fear. The off-ramp does not change the payoffs of the Nash equilibria; it changes the
+            perceived risk of the transition period. Axis is more willing to commit if it knows it
+            will not be left exposed alone. With the off-ramp in place, the coordination problem
+            shrinks: both firms need only believe that the other will commit before the deadline,
+            not that the other will commit unconditionally.
+          </p>
+        </div>
+      </section>
+
+      <section class="phase phase-6" id="phase-6">
+        <div class="phase-head">
+          <p class="phase-num">Phase 6</p>
+          <h3>Dynamic Adaptation</h3>
+        </div>
+        <div class="phase-body">
+          <p>
+            <span class="lead-in"
+              >The game changes as the environment around it changes, and four shifts in particular
+              can flip which equilibrium prevails.</span
+            >
+            Coordination games are sensitive to changes in the shared expectation landscape. An
+            event that shifts what either player believes the other will do can move the game from
+            one equilibrium to another without altering the payoffs at all.
+          </p>
+          <p>
+            The most powerful shift is a <em>public anchor</em>: a regulator or industry body that
+            endorses the joint standard as the preferred direction for the market. This creates a
+            focal point in the sense of Thomas Schelling: a point that stands out as the natural,
+            obvious choice, even without communication. When a regulator names a standard, the
+            equilibrium selection problem simplifies. Each player now expects the other to choose
+            Joint Standard because defecting from a publicly endorsed standard carries a
+            reputational and regulatory cost that is not in the original payoff matrix. Focal points
+            do not change payoffs; they change beliefs, and beliefs are what the coordination game
+            runs on.
+          </p>
+          <p>
+            A second shift is the entry of a third competitor. If a new entrant arrives with its own
+            proprietary system, the (Proprietary, Proprietary) equilibrium between Axis and Lumen
+            becomes less attractive: two proprietary systems in a market with a third entrant
+            produces fragmentation that damages both. The entry changes the game's topology, making
+            (Joint Standard, Joint Standard) between Axis and Lumen the only option with enough
+            combined market power to resist the entrant. Coalition logic replaces coordination
+            logic.
+          </p>
+          <p>
+            A third shift is a change in Axis's risk profile. A new board, a new CEO with a growth
+            mandate, or a failed proprietary product launch can raise Axis's risk appetite. As Axis
+            becomes less risk-averse, the risk-dominant equilibrium loses its pull. The threshold at
+            which Axis prefers the joint standard even under uncertainty shifts downward. What was a
+            coordination problem becomes a near-trivial commitment problem.
+          </p>
+          <p>
+            A fourth shift is an expansion of the market for the joint standard. If adjacent use
+            cases emerge that only a shared standard can serve, the payoff at (8,8) rises above 8
+            while the payoff at (3,3) remains unchanged. As the gap between the two equilibria
+            widens, the joint standard becomes increasingly attractive even to risk-averse players.
+            The coordination problem does not disappear, but its difficulty decreases as the
+            asymmetry between the two equilibria grows. Monitor adjacent market developments as a
+            leading indicator: a market expansion that only a standard can capture is an argument to
+            invest in coordination mechanisms now, before a competitor acts as focal point instead.
+          </p>
+        </div>
+      </section>
+
+      <div class="lesson">
+        <p class="phase-num">Lesson</p>
+        <p>
+          The stag hunt teaches that
+          <em>failure to reach a good equilibrium is not a failure of rationality</em>. Both Axis
+          and Lumen may be fully rational, know each other to be rational, and still end up at
+          (Proprietary, Proprietary), because each is acting on a correct belief about the other's
+          uncertainty. The fix is not cleverness but <em>coordination technology</em>: communication
+          that is costly enough to be credible, commitment devices that eliminate the fear of
+          exposure, and shared focal points that raise the salience of the better equilibrium until
+          it becomes the obvious choice.
+        </p>
+      </div>
+
+      <footer>
+        <div class="mark">
+          <svg
+            class="panot"
+            viewBox="-0.38 -0.37 32.75 32.76"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              fill="currentColor"
+              d="M14.22 29.79l-0.25-0.26-0.37-0.36-0.35-0.35-0.35-0.34-0.42-0.42-0.61-0.61-0.91-0.9c-0.69 0.47-1.76 0.63-2.54 0.55-0.71-0.07-1.38-0.31-1.95-0.75-0.13-0.1-0.25-0.19-0.36-0.3-0.23-0.23-0.47-0.5-0.64-0.78-0.38-0.64-0.56-1.37-0.53-2.12s0.19-1.36 0.56-2.04c-0.05-0.07-0.1-0.13-0.17-0.19l-1.88-1.87-0.15-0.15-1.44-1.44-0.62-0.62-0.43-0.44s-0.11-0.12-0.14-0.18c-0.1-0.18-0.04-0.4 0.1-0.54l3.59-3.6 1.16-1.15-0.27-0.6c-0.34-0.77-0.4-1.82-0.18-2.64 0.42-1.54 1.74-2.66 3.35-2.83 0.27-0.03 0.53 0 0.8 0l0.35 0.05c0.51 0.07 0.99 0.28 1.44 0.53l3.89-3.9 0.75-0.74c0.1-0.09 0.23-0.19 0.37-0.17s0.27 0.1 0.37 0.2l1.99 1.99 0.42 0.42 2.19 2.19s0.11-0.04 0.14-0.06c0.48-0.26 1.01-0.43 1.56-0.49 0.33-0.04 0.85-0.02 1.18 0.03 1.05 0.19 1.95 0.8 2.54 1.67 0.46 0.68 0.64 1.46 0.62 2.29-0.01 0.57-0.14 1.12-0.38 1.63l-0.2 0.41 1.38 1.37 2.15 2.15 1.26 1.27c0.19 0.19 0.16 0.46-0.01 0.63l-0.59 0.61-0.48 0.48-0.38 0.38-3.25 3.25c-0.1 0.1-0.02 0.09 0.09 0.33 0.38 0.87 0.51 1.77 0.33 2.7-0.25 1.3-1.21 2.38-2.45 2.82-0.25 0.09-0.49 0.14-0.75 0.18-0.88 0.14-1.96-0.05-2.73-0.52-0.08 0.05-0.12 0.12-0.19 0.19l-2 2-0.18 0.18-2.3 2.3c-0.12 0.12-0.29 0.19-0.43 0.15-0.2-0.05-0.33-0.2-0.46-0.34l-0.31-0.31-0.17-0.17-0.33-0.33-0.27-0.27-0.16-0.15z m4.71-22.47l0.32-0.33 0.68-0.69s0.08-0.06 0.11-0.11l-1.86-1.88-0.95-0.95-0.54-0.54-0.62-0.63s-0.06-0.05-0.07-0.03l-0.06 0.06-3.98 3.98c0.09 0.08 0.15 0.13 0.22 0.2l0.82 0.84c0.38 0.39 0.8 0.69 1.3 0.92 0.7 0.32 1.4 0.37 2.16 0.32 0.91-0.07 1.84-0.48 2.48-1.14z m3.56 12.46c-0.01-0.3-0.08-0.58-0.19-0.86-0.05-0.11-0.09-0.22-0.15-0.32-0.61-1.05-0.83-2.17-0.67-3.38 0.1-0.76 0.33-1.26 0.69-1.93 0.33-0.62 0.42-1.35 0.18-2.02-0.34-0.97-1.2-1.64-2.22-1.74-0.46-0.05-0.91 0.04-1.34 0.23-0.5 0.22-0.98 0.46-1.51 0.59-0.72 0.18-1.61 0.2-2.33 0.05-0.96-0.19-1.19-0.45-2.01-0.74-0.3-0.1-0.6-0.14-0.92-0.16-0.42 0.04-0.81 0.13-1.19 0.34-0.45 0.25-0.82 0.63-1.06 1.08-0.22 0.41-0.29 0.83-0.27 1.29s0.19 0.9 0.43 1.32c0.64 1.12 0.77 2.55 0.44 3.79-0.12 0.45-0.31 0.85-0.53 1.25-0.19 0.34-0.31 0.7-0.35 1.1-0.09 1.02 0.46 1.96 1.34 2.45 0.31 0.17 0.63 0.3 0.99 0.33 0.54 0.05 1.01-0.05 1.49-0.29 0.33-0.16 0.63-0.3 0.97-0.43 0.74-0.27 1.66-0.35 2.44-0.25 0.65 0.11 1.13 0.28 1.71 0.57 0.38 0.19 0.75 0.35 1.18 0.39 0.22 0.02 0.44 0.03 0.65 0 1.3-0.22 2.28-1.35 2.22-2.67z m1.9-1.04c0.17 0.19 0.33 0.35 0.5 0.52l0.86 0.84 0.2-0.18 3.21-3.19 0.72-0.71-4.14-4.14c-0.12 0.07-0.19 0.17-0.28 0.26l-0.74 0.73c-0.48 0.47-0.86 0.99-1.07 1.63-0.12 0.34-0.2 0.68-0.22 1.04-0.03 0.49-0.02 1.03 0.1 1.51 0.16 0.62 0.43 1.2 0.86 1.7z m-17.38 0.6c0.33-0.33 0.65-0.64 0.9-1.03 0.26-0.41 0.45-0.83 0.56-1.3 0.14-0.66 0.14-1.33 0-1.99-0.16-0.72-0.45-1.37-0.97-1.9l-1.24-1.24-2.06 2.07-2.06 2.08 1.88 1.88 0.87 0.87 1.35 1.35 0.78-0.78z m8.99 10.53l2.51-2.5 0.42-0.41 1.13-1.13-0.84-0.84c-0.28-0.28-0.54-0.55-0.86-0.79-1.53-1.08-3.86-0.95-5.19 0.39l-1.24 1.24 0.58 0.56 1.28 1.28 0.38 0.38 0.51 0.51 0.62 0.62 0.69 0.69z"
+            />
+          </svg>
+          <div class="colophon">
+            Modelled with <strong>game-theorist</strong> by Salt &amp; Silicon
+          </div>
+        </div>
+        <div class="pagemark">
+          <a class="colophon-link" href="https://saltsilicon.com" target="_blank" rel="noopener"
+            >saltsilicon.com</a
+          >
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      ;(function () {
+        var root = document.documentElement
+        var buttons = document.querySelectorAll('.theme-switch button')
+        var KEY = 'gt-theme'
+        var stored = null
+        try {
+          stored = localStorage.getItem(KEY)
+        } catch (e) {}
+        if (stored === 'light' || stored === 'dark') {
+          root.setAttribute('data-theme', stored)
+        }
+        function sync() {
+          var current = root.getAttribute('data-theme')
+          buttons.forEach(function (b) {
+            b.setAttribute('aria-pressed', b.dataset.set === current ? 'true' : 'false')
+          })
+        }
+        sync()
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () {
+            root.setAttribute('data-theme', b.dataset.set)
+            try {
+              localStorage.setItem(KEY, b.dataset.set)
+            } catch (e) {}
+            sync()
+          })
+        })
+
+        // Reveal in-flow blocks as they scroll into view (once each).
+        var sel = '.part, .phase, .figure, .table-wrap, .callout, .lesson, .players, .pullquote'
+        var blocks = document.querySelectorAll(sel)
+        var reduce = false
+        try {
+          reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        } catch (e) {}
+        if (reduce || !('IntersectionObserver' in window)) {
+          blocks.forEach(function (el) {
+            el.classList.add('is-in')
+          })
+        } else {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('is-in')
+                  io.unobserve(entry.target)
+                }
+              })
+            },
+            { rootMargin: '0px 0px -10% 0px', threshold: 0.1 }
+          )
+          blocks.forEach(function (el) {
+            io.observe(el)
+          })
+        }
+      })()
+    </script>
+  </body>
+</html>

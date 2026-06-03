@@ -1,0 +1,1744 @@
+<!doctype html>
+<!--
+  GAME-THEORIST ARTEFACT TEMPLATE  ·  Salt & Silicon
+
+  HOW TO FILL THIS:
+  At the end of a six-phase game-theorist session, copy this file, replace every {{TOKEN}}
+  with the analysis content, and save as a standalone .html (e.g. analysis-<slug>.html).
+
+    {{TITLE}}        one line, the situation (e.g. "The OpenAI board crisis")
+    {{SUBTITLE}}     short meta line beside the kicker on the cover
+                     (e.g. "Sequential · 4 players · 72 hours")
+    {{EYEBROW}}      small tracked label above the title (e.g. "Case dossier · November 2023")
+    {{DECK}}         italic deck under the title, one sentence framing the situation
+    {{COVER_BY}}     short attribution on the cover foot, left
+                     (e.g. "Modelled with <strong>game-theorist</strong> · Salt &amp; Silicon")
+    {{COVER_WHEN}}   short date / span on the cover foot, right (e.g. "17 to 21 November 2023")
+    {{AUTHOR_LINE}}  colophon line in the footer; wrap the product name in <strong>
+                     (e.g. "Modelled with <strong>game-theorist</strong> by Salt &amp; Silicon")
+    {{PLAYERS}}      <li> items, one per player:
+                     <li><span class="player-name">Name</span> short role</li>
+    {{GAME_TYPE}}    e.g. "Sequential, 4 players, incomplete information"
+    {{FRAMEWORK}}    e.g. "Coalition-formation with iterated dominance"
+    {{PART_1_KICKER}} .. {{PART_3_KICKER}}   tracked label on each part divider
+                     (e.g. "Part I · Phases 1 to 2")
+    {{PART_1_TITLE}} .. {{PART_3_TITLE}}     serif heading for each part divider
+    {{PART_1_FRAME}} .. {{PART_3_FRAME}}     one framing sentence under each part heading
+    {{PULL_QUOTE}}   one short sentence, the sharpest line of the analysis
+    {{PULL_SOURCE}}  who or what it is attributed to (small-caps), optional
+    {{PHASE_1_BODY}} .. {{PHASE_6_BODY}}   HTML for each phase (<p>, <ul><li>, <strong>)
+    {{DIAGRAM}}      the inline SVG plot; see "THE DIAGRAM" below
+    {{LESSON}}       one closing paragraph
+
+  LEAD-INS:
+  Open each phase with a bold lead-in sentence, then run on in normal weight. Wrap the
+  opening clause in <span class="lead-in">...</span>. Example for {{PHASE_1_BODY}}:
+    <p><span class="lead-in">The board believed it was playing a one-shot game.</span>
+       Hire the CEO, fire the CEO, replace the CEO. The legal authority was uncontested.</p>
+
+  PART DIVIDERS:
+  The six phases are grouped into three editorial parts, each opened by a divider (an accent
+  tick, a part kicker, a serif title, and a framing sentence). A natural split is Part I =
+  Phases 1 to 2 (the terrain and the incentives), Part II = Phases 3 to 4 (the strategy space
+  and the equilibrium), Part III = Phases 5 to 6 (the recommendation and the adaptation).
+  Reframe the titles to the specific analysis; the phase numbering never changes.
+
+  THE DIAGRAM ({{DIAGRAM}}):
+  Insert ONE inline SVG exhibit, placed inside Phase 2 (after the incentive map) or Phase 3.
+  Pick whichever plot the analysis actually earns:
+    A. A 2x2 quadrant plot. Choose two axes that carry the central insight (e.g. FORMAL
+       POWER x REAL LEVERAGE, COST x BENEFIT, SHORT HORIZON x LONG HORIZON). Plot each player
+       as a named point. Shade the quadrant where the game is decided. Mark ONE focal point
+       (the misread, the pivot) with class "is-focal"; mark high-relevance points "is-high";
+       leave the rest as open "plot-dot". Add a legend and a roman caption (open it with
+       the figure number in <strong>, e.g. <strong>Figure 1.</strong>).
+    B. A 2x2 payoff matrix. Two players, two strategies each, four cells with payoff pairs;
+       ring the Nash cell. (Build it from a <table> styled like the strategy table, or as SVG.)
+  Draw everything in the accent: the primitives below all key to var(--accent) or the ink
+  ramp, so a single change to --accent recolours the whole diagram. Keep it thin and quiet.
+  No chart.js, no external assets: inline SVG only. A worked quadrant lives in the example file
+  (examples/analysis-example.html, "Figure 1"); copy its structure and re-plot your points.
+  If a plot would be forced or misleading, omit the figure entirely. A weak diagram is worse
+  than none.
+
+  Keep the phase headers exactly "Phase N: Name". British English. No em dashes in copy.
+  Wrap a key term in <em>...</em> to give it the accent colour in running prose. Emphasis
+  is set in roman (upright, accent, slightly bolder), never italic: the dossier carries no
+  italic type anywhere.
+
+  STRATEGY TABLE (inside {{PHASE_3_BODY}} when the analysis earns one):
+  Wrap the <table> in <div class="table-wrap">...</div> so it reads as a raised exhibit.
+  Mark dominated rows class="dominated", the surviving move class="dominant".
+
+  COLOUR: this dossier ships in BLACK on cream, the Penguin Classic default. To recolour
+  by subject, change the single --accent variable (light and dark). The full Penguin
+  palette and the selection rule are documented at the top of the <style> block below.
+  Keep it black unless the subject genuinely earns a colour (roughly 80% stay black).
+
+  NO HTML RENDERING? (some agents/terminals): skip this template and output the same six
+  sections as clean Markdown instead. The template is a nicety, not the deliverable.
+
+  Self-contained: fonts load from Google Fonts when online (EB Garamond serif + JetBrains Mono)
+  and fall back to system serif and mono stacks offline. Prints to A4 as a paper dossier with
+  centred page folios.
+-->
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}} · game-theorist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+         CHOOSE THE ACCENT  ·  the Penguin spine colour
+         ------------------------------------------------------------
+         One variable controls the colour of this dossier: --accent
+         (defined twice below, once for light, once for dark). The
+         system is built on muted Penguin Classic spine colours in
+         the Salt & Silicon register. Pick the accent by the SUBJECT
+         of the analysis. DEFAULT TO BLACK roughly 80% of the time,
+         the way Penguin Classics default to black. Reach for a
+         colour only when the subject genuinely calls for it.
+
+           SUBJECT                       LIGHT --accent   DARK --accent
+           ----------------------------  ---------------  ------------
+           default / serious / neutral   #1a1614 (black)  #c9c2b4 (bone)
+           disruption, urgency           #b0461f          #d97a4e
+           growth, cooperation           #2f6048          #6aa585
+           institutions, governance      #284867          #6f93b8
+           high stakes, open conflict    #6b2222          #c06a64
+           power, influence              #553852          #9c7c97
+           money, markets, pricing       #b5862a          #d8b056
+           tech, platforms               #2c5656          #6fa0a0
+           neutral, analytical           #44525c          #8ea2ae
+           legacy, prestige              #5a2632          #b3717c
+           long-horizon, resources       #39472e          #8aa06f
+           sombre serious alt            #1b2430          #8a99ad
+
+         TO USE: set --accent (light) and --accent (dark) to a row
+         above, then set --on-accent so text on the cartouche stays
+         legible: bone (#f3f1ec) on dark accents, void (#050403) on
+         light accents like ochre. Everything else, including the
+         figure, follows. Also adjust --accent-wash to match the new
+         accent (the shaded quadrant fill).
+         ============================================================ */
+      :root {
+        /* ---- Salt & Silicon base, light: bone paper, ink text ---- */
+        --bone: #f3f1ec; /* primary page */
+        --cream: #f5edd6; /* warm secondary */
+        --paper: #eae4d4; /* raised surfaces */
+        --ink: #1a1614; /* body text, warm near-black */
+        --ink-2: #3a352f; /* secondary prose */
+        --ink-3: #6e665b; /* tertiary, captions */
+        --ink-4: #9a9186; /* faint labels, page numbers */
+        --rule: #ddd6c6; /* hairlines on paper */
+        --rule-soft: #e6e0d1;
+
+        /* ---- Accent: change THIS to recolour the whole dossier ---- */
+        --accent: #1a1614; /* black/ink, the default spine */
+        --on-accent: #f3f1ec; /* text on the accent cartouche (bone) */
+        --accent-tint: color-mix(in oklch, var(--accent) 16%, transparent); /* selection wash */
+        --accent-wash: color-mix(in oklch, var(--accent) 4.5%, transparent); /* shaded quadrant fill */
+
+        /* mapped roles */
+        --page: var(--bone);
+        --surface: var(--cream);
+        --cover-bg: var(--cream); /* cream paper, never a full-bleed colour */
+        --cover-band: var(--accent); /* cartouche + plinth, in the accent */
+        --cover-ink: var(--ink);
+        --cover-ink-soft: var(--ink-3);
+        --quote-rule: var(--rule);
+
+        --serif: 'EB Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+        --mono: 'JetBrains Mono', 'SF Mono', ui-monospace, Consolas, Monaco, monospace;
+        --sans: 'Libre Franklin', 'Gill Sans', 'Gill Sans MT', system-ui, sans-serif;
+
+        /* ---- Type scale: a modular ramp on a ~1.22 ratio, anchored on a
+           19.5px body. EB Garamond has a small eye, so the body sits high
+           and every step is set on its own size, not inherited. ---- */
+        --t-caption: 16px; /* captions, legends, fine print */
+        --t-body: 19.5px; /* running prose, the base step */
+        --t-list: 18.5px; /* bullet items */
+        --t-table: 18px; /* strategy table cells */
+        --t-lift: 24px; /* equilibrium lead, lesson */
+        --t-phase: 33px; /* phase titles */
+        --t-part: clamp(32px, 4.4vw, 40px); /* part titles */
+        --t-display: clamp(48px, 7.5vw, 68px); /* cover title */
+        /* tracked mono label, one size for every small-caps marker */
+        --t-label: 12px;
+
+        /* ---- Material: layered, hue-tinted shadows so a surface reads as a
+           sheet of paper set down on the page, not a flat fill. Three stops:
+           a tight contact shadow, a mid lift, a soft ambient cast. ---- */
+        --shadow-sheet:
+          0 1px 1px rgba(26, 22, 20, 0.04), 0 4px 10px rgba(26, 22, 20, 0.05),
+          0 18px 44px rgba(26, 22, 20, 0.07);
+        --shadow-raised:
+          0 1px 2px rgba(26, 22, 20, 0.05), 0 6px 16px rgba(26, 22, 20, 0.08),
+          0 24px 60px rgba(26, 22, 20, 0.09);
+        --shadow-inset: inset 0 0 0 1px var(--rule-soft);
+        /* the colour-forward callout fill, accent at a readable alpha */
+        --callout-fill: color-mix(in oklch, var(--accent) 5%, transparent);
+        --callout-edge: color-mix(in oklch, var(--accent) 14%, transparent);
+
+        /* tuned interaction curves: a strong ease-out for press feedback,
+           and a calm theme cross-fade that stays under 300ms */
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-theme: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      [data-theme='dark'] {
+        /* ---- S&S base, dark: void ground, ink surfaces, bone text ---- */
+        --void: #050403;
+        --charcoal: #0d0b08;
+        --page: var(--void);
+        --surface: var(--charcoal);
+        --paper: #15110c; /* raised hover ground in the void */
+        --ink: #ece8df; /* broken bone, never pure white */
+        --ink-2: #cbc4b6;
+        --ink-3: #9a9183;
+        --ink-4: #6f675b;
+        --rule: rgba(236, 232, 223, 0.13);
+        --rule-soft: rgba(236, 232, 223, 0.07);
+
+        /* ---- Accent, dark variant: change THIS alongside the light one.
+           For the black default, the dark accent is a warm bone/grey so
+           the cover band reads as embossed metal, not a hole of colour. */
+        --accent: #c9c2b4;
+        --on-accent: #050403; /* void text on the bone cartouche */
+        --accent-tint: color-mix(in oklch, var(--accent) 16%, transparent);
+        --accent-wash: color-mix(in oklch, var(--accent) 6%, transparent);
+
+        --cover-bg: var(--charcoal);
+        --cover-band: var(--accent);
+        --cover-ink: var(--ink);
+        --cover-ink-soft: var(--ink-3);
+        --quote-rule: rgba(236, 232, 223, 0.18);
+
+        /* in the void, shadows go deep and lose their hue tint; the inset
+           highlight is a faint bone edge, the lip of an embossed sheet */
+        --shadow-sheet:
+          0 1px 1px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.42),
+          0 22px 52px rgba(0, 0, 0, 0.5);
+        --shadow-raised:
+          0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 22px rgba(0, 0, 0, 0.5),
+          0 28px 68px rgba(0, 0, 0, 0.6);
+        --shadow-inset: inset 0 1px 0 rgba(236, 232, 223, 0.07);
+        --callout-fill: color-mix(in oklch, var(--accent) 7%, transparent);
+        --callout-edge: color-mix(in oklch, var(--accent) 20%, transparent);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: var(--serif);
+        font-size: var(--t-body);
+        line-height: 1.6;
+        text-wrap: pretty;
+        text-rendering: optimizeLegibility;
+        font-kerning: normal;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        transition:
+          background 0.28s var(--ease-theme),
+          color 0.28s var(--ease-theme);
+      }
+
+      /* reduced motion: keep colour and opacity, drop every transform and
+         theme cross-fade. Honoured globally, not per-component. */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      /* ---------- Grain: salt has grain. A fixed noise field over the
+         whole page, so it does not scroll like a sticker. Light mode is a
+         faint paper tooth; dark mode a touch more, like film. Sits behind
+         content, never intercepts clicks. ---------- */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 180px 180px;
+        opacity: 0.04; /* paper tooth */
+        mix-blend-mode: multiply;
+      }
+      [data-theme='dark'] body::before {
+        opacity: 0.075; /* film grain */
+        mix-blend-mode: screen;
+      }
+      /* keep content above the grain field */
+      .cover,
+      .sheet,
+      .theme-switch {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* ---------- Cover masthead: Penguin Classic, not a full-bleed band.
+         Cream paper, a hairline rule top and bottom, and a small cartouche
+         in the accent colour carrying the kicker. The title sits in ink on
+         paper; the plinth strip at the base is the accent. ---------- */
+      .cover {
+        background: var(--cover-bg);
+        color: var(--cover-ink);
+        padding: 60px 0 0;
+        border-bottom: 1px solid var(--rule);
+        transition:
+          background 0.28s var(--ease-theme),
+          color 0.28s var(--ease-theme);
+      }
+      .cover-inner {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 0 44px 0;
+      }
+      .cover-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 24px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--rule);
+      }
+      /* the cartouche: a struck label band in the accent colour */
+      .kicker {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: var(--on-accent);
+        background: var(--cover-band);
+        padding: 7px 13px;
+        margin: 0;
+        border-radius: 2px;
+      }
+      /* meta beside the kicker: roman small-caps mono, not italic serif.
+         emphasis comes from tracking and tone, never a slanted face */
+      .kicker-meta {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--cover-ink-soft);
+        white-space: nowrap;
+      }
+      .emblem {
+        text-align: center;
+        margin: 44px 0 38px;
+      }
+      .emblem img {
+        width: 184px;
+        height: auto;
+        /* the brass is a clean cut-out with true transparency: no blend,
+           it is a struck medallion. A soft shadow seats it on the sheet,
+           in both modes. */
+        filter: drop-shadow(0 6px 16px rgba(26, 22, 20, 0.22));
+      }
+      [data-theme='dark'] .emblem img {
+        filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55));
+      }
+      /* eyebrow above the title: a tracked label, struck in the accent */
+      .cover-eyebrow {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 18px;
+      }
+      .cover h1 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--t-display);
+        line-height: 0.98;
+        letter-spacing: -0.02em;
+        color: var(--cover-ink);
+        margin: 0;
+        max-width: 20ch;
+        text-wrap: balance;
+      }
+      /* deck: roman, not italic. A larger serif step in a quieter ink,
+         the framing line carries by size and colour, not a slant. */
+      .cover .deck {
+        font-family: var(--serif);
+        font-size: clamp(21px, 2.8vw, 26px);
+        font-weight: 400;
+        line-height: 1.4;
+        color: var(--ink-2);
+        margin: 24px 0 0;
+        max-width: 38ch;
+        padding-bottom: 20px;
+      }
+      /* a closing meta line on the cover, mirrors the reference colophon row */
+      .cover-foot {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px 24px;
+        padding: 16px 0 28px;
+        border-top: 1px solid var(--rule);
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      .cover-foot .by strong {
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .cover-foot .by,
+      .cover-foot .when {
+        white-space: nowrap;
+      }
+      /* the plinth: a thin accent strip closing the cover, Penguin spine */
+      .cover-plinth {
+        height: 10px;
+        background: var(--cover-band);
+        transition: background 0.28s var(--ease-theme);
+      }
+
+      /* ---------- Body sheet on paper. Wider editorial measure, tighter
+         side gutters: the content takes the width, the page gives up the
+         margin. The sheet is a physical leaf, set down on the page with a
+         layered shadow and a faint top-edge highlight. ---------- */
+      .sheet {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 76px 56px 96px;
+        background: var(--page);
+        box-shadow: var(--shadow-sheet), var(--shadow-inset);
+        transition: box-shadow 0.28s var(--ease-theme);
+      }
+
+      /* ---------- Dossier head (players / meta) ---------- */
+      .dossier {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 48px;
+        padding-bottom: 8px;
+        margin-bottom: 64px;
+      }
+      .dossier-label {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 16px;
+      }
+      .players {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        counter-reset: player;
+      }
+      .players li {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 13px 0;
+        border-top: 1px solid var(--rule-soft);
+        font-size: var(--t-list);
+        color: var(--ink-3);
+        line-height: 1.46;
+      }
+      .players li:first-child {
+        border-top: none;
+        padding-top: 0;
+      }
+      /* the roman numeral marker: upright, tabular, in the accent. Roman,
+         not italic, so the index reads as a struck folio mark. */
+      .players li::before {
+        content: counter(player, upper-roman) '.';
+        counter-increment: player;
+        font-family: var(--mono);
+        font-weight: 500;
+        color: var(--accent);
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+        min-width: 20px;
+      }
+      .players .player-name {
+        font-family: var(--serif);
+        font-weight: 600;
+        color: var(--ink);
+        display: block;
+        font-size: 19px;
+      }
+      .facts {
+        margin: 0;
+      }
+      .facts dt {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 7px;
+      }
+      .facts dd {
+        font-family: var(--serif);
+        font-size: 19px;
+        color: var(--ink-2);
+        margin: 0 0 24px;
+        line-height: 1.42;
+      }
+      .facts dd:last-child {
+        margin-bottom: 0;
+      }
+
+      .definitions {
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        padding: 28px 0 30px;
+        margin: -22px 0 64px;
+      }
+      .definitions h2 {
+        font-family: var(--serif);
+        font-size: 30px;
+        line-height: 1.05;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 10px;
+      }
+      .definitions .definitions-intro {
+        font-size: 19px;
+        line-height: 1.45;
+        color: var(--ink-2);
+        max-width: 58ch;
+        margin: 0 0 22px;
+      }
+      .definition-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 30px;
+        margin: 0;
+      }
+      .definition-grid div {
+        border-top: 1px solid var(--rule-soft);
+        padding-top: 12px;
+      }
+      .definition-grid dt {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 6px;
+      }
+      .definition-grid dd {
+        font-size: 18px;
+        line-height: 1.45;
+        color: var(--ink-2);
+        margin: 0;
+      }
+
+      /* ---------- Part divider: a solid accent square, a serif part title,
+         and a framing sentence. Groups the six phases into editorial
+         movements. The marker is a struck block, never a decorative dash. */
+      .part {
+        margin: 8px 0 46px;
+      }
+      .part-tick {
+        width: 11px;
+        height: 11px;
+        border-radius: 2px;
+        background: var(--accent);
+        margin: 0 0 22px;
+      }
+      .part-kicker {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin: 0 0 10px;
+      }
+      .part h2 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--t-part);
+        line-height: 1.08;
+        letter-spacing: -0.018em;
+        color: var(--ink);
+        margin: 0 0 16px;
+        text-wrap: balance;
+      }
+      .part p {
+        font-family: var(--serif);
+        font-size: var(--t-body);
+        line-height: 1.54;
+        color: var(--ink-3);
+        margin: 0;
+        max-width: 54ch;
+      }
+
+      /* ---------- Phases ---------- */
+      .phase {
+        margin-bottom: 52px;
+      }
+      .phase-head {
+        margin-bottom: 18px;
+      }
+      /* section header in tracked small-caps mono, the reference's
+         "PRINCIPE 1 · GOOD DESIGN IS SIMPLE" treatment */
+      /* section marker: a small struck square, then the tracked label.
+         No dash, no rule, just the block and the small-caps mono. */
+      .phase-num {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 11px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .phase-num::before {
+        content: '';
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        background: var(--accent);
+        display: inline-block;
+      }
+      .phase h3 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--t-phase);
+        line-height: 1.14;
+        letter-spacing: -0.012em;
+        color: var(--ink);
+        margin: 0;
+        text-wrap: balance;
+      }
+      .phase-body p {
+        font-family: var(--serif);
+        font-size: var(--t-body);
+        line-height: 1.62;
+        color: var(--ink-2);
+        margin: 0 0 1.05em;
+        text-align: left;
+        hyphens: none;
+      }
+      .phase-body p:last-child {
+        margin-bottom: 0;
+      }
+      /* lead-in: the first sentence of a phase, struck in bold ink, then
+         runs on in normal weight */
+      .phase-body p .lead-in {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      /* keyword emphasis: roman, lifted into the accent with a touch more
+         weight. No italic, the term carries by colour and weight. */
+      .phase-body em {
+        font-style: normal;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .phase-body strong {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .phase-body ul {
+        list-style: none;
+        margin: 0 0 1.05em;
+        padding: 0;
+      }
+      .phase-body ul li {
+        font-family: var(--serif);
+        font-size: var(--t-list);
+        line-height: 1.54;
+        color: var(--ink-2);
+        padding: 0 0 0 24px;
+        margin: 0 0 0.78em;
+        position: relative;
+      }
+      .phase-body ul li::before {
+        content: '';
+        position: absolute;
+        left: 2px;
+        top: 0.62em;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      /* Equilibrium: a single quiet inset, not a black box */
+      .phase.equilibrium .phase-body {
+        border-top: 1px solid var(--accent);
+        border-bottom: 1px solid var(--rule);
+        padding: 26px 0 6px;
+        margin-top: 4px;
+      }
+      .phase.equilibrium .phase-body p:first-child {
+        font-size: var(--t-lift);
+        line-height: 1.34;
+        color: var(--ink);
+        text-align: left;
+        font-weight: 500;
+      }
+      .phase.equilibrium .phase-body p:last-child {
+        font-size: var(--t-list);
+      }
+
+      /* ---------- Strategy table: a raised exhibit, set in a bordered card
+         with the sheet shadow, so the move/outcome grid reads as its own
+         object. Larger type, roomier cells, a tinted header band. Wrap the
+         <table> in <div class="table-wrap"> in the markup. ---------- */
+      .table-wrap {
+        margin: 14px 0 1.2em;
+        border: 1px solid var(--callout-edge);
+        border-radius: 6px;
+        background: var(--page);
+        box-shadow: var(--shadow-sheet);
+        overflow: hidden;
+        transition: box-shadow 0.28s var(--ease-theme);
+      }
+      .phase-body table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-family: var(--serif);
+        font-size: var(--t-table);
+        margin: 0;
+      }
+      .phase-body th {
+        text-align: left;
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--callout-fill);
+        padding: 15px 22px;
+        border-bottom: 1px solid var(--callout-edge);
+        vertical-align: bottom;
+      }
+      .phase-body td {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--rule-soft);
+        color: var(--ink-2);
+        vertical-align: top;
+        line-height: 1.5;
+        text-align: left;
+      }
+      .phase-body tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .phase-body td:first-child {
+        font-weight: 600;
+        color: var(--ink);
+        width: 30%;
+      }
+      .phase-body td:nth-child(2),
+      .phase-body td:nth-child(3) {
+        width: 11%;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .phase-body tr.dominated td {
+        opacity: 0.52;
+      }
+      .phase-body tr.dominated td:first-child {
+        text-decoration: line-through;
+      }
+      .phase-body tr.dominant td:first-child {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      /* ---------- Figure: an inline SVG plot, drawn in the accent colour.
+         A framed editorial exhibit with a tracked label, the diagram, a
+         legend, and an italic caption. This is the centre of gravity of
+         the dossier, the reference's "Figure 1". All primitives key to the
+         accent / ink ramp, so one change to --accent recolours the plot.
+         See examples/analysis-example.html for a fully worked instance. */
+      /* the figure is the centre of gravity: a raised exhibit card, set
+         down on the sheet with its own shadow and a tinted ground, so the
+         plot reads as a mounted plate rather than inline ink. */
+      .figure {
+        margin: 22px 0 14px;
+        padding: 30px 32px 26px;
+        border: 1px solid var(--callout-edge);
+        border-radius: 6px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sheet);
+        transition: box-shadow 0.28s var(--ease-theme);
+      }
+      .figure-label {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .figure-label::before {
+        content: '';
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        background: var(--accent);
+        display: inline-block;
+      }
+      .figure svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+      /* plot primitives */
+      .plot-axis {
+        stroke: var(--ink-3);
+        stroke-width: 1;
+      }
+      .plot-grid {
+        stroke: var(--rule);
+        stroke-width: 1;
+      }
+      .plot-quadrant {
+        fill: var(--accent-wash);
+        stroke: none;
+      }
+      .plot-divider {
+        stroke: var(--rule);
+        stroke-width: 1;
+        stroke-dasharray: 2 4;
+      }
+      .plot-axis-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        fill: var(--ink-3);
+      }
+      .plot-pole {
+        font-family: var(--mono);
+        font-size: 9px;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        fill: var(--ink-4);
+      }
+      .plot-zone {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        fill: var(--accent);
+      }
+      .plot-dot {
+        fill: none;
+        stroke: var(--ink);
+        stroke-width: 1.4;
+      }
+      .plot-dot.is-focal {
+        fill: var(--accent);
+        stroke: var(--accent);
+      }
+      .plot-dot.is-high {
+        fill: var(--accent);
+        fill-opacity: 0.45;
+        stroke: var(--accent);
+      }
+      .plot-name {
+        font-family: var(--serif);
+        font-size: 16px;
+        fill: var(--ink);
+      }
+      .plot-name.is-focal {
+        font-weight: 600;
+        fill: var(--accent);
+      }
+      .plot-name.is-muted {
+        fill: var(--ink-3);
+      }
+      [data-theme='dark'] .plot-dot {
+        stroke: var(--ink-2);
+      }
+      .figure-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 24px;
+        margin: 20px 0 0;
+        padding: 14px 0 0;
+        border-top: 1px solid var(--rule);
+      }
+      .figure-legend .key {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--ink-3);
+      }
+      .figure-legend .swatch {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        border: 1.4px solid var(--ink);
+        background: transparent;
+      }
+      .figure-legend .swatch.focal {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .figure-legend .swatch.high {
+        background: var(--accent);
+        opacity: 0.45;
+        border-color: var(--accent);
+      }
+      [data-theme='dark'] .figure-legend .swatch {
+        border-color: var(--ink-2);
+      }
+      /* caption: roman, one step up from fine print. The figure number is
+         struck in the accent (a <strong> inside), no italic anywhere. */
+      .figure-caption {
+        font-family: var(--serif);
+        font-size: var(--t-caption);
+        line-height: 1.5;
+        color: var(--ink-3);
+        margin: 18px 0 0;
+        max-width: 60ch;
+      }
+      .figure-caption strong {
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      /* ---------- Pull-quote: a coloured callout, the way Obsidian sets a
+         callout block. A tinted accent ground, a solid accent bar down the
+         left edge, a raised shadow so it lifts off the sheet. The quote is
+         serif and roman, larger; the attribution is tracked small-caps. It
+         pops out of the running flow, it does not sit flat in it. ---------- */
+      .pullquote {
+        position: relative;
+        margin: 16px 0 52px;
+        padding: 32px 36px 30px 40px;
+        background: var(--callout-fill);
+        border: 1px solid var(--callout-edge);
+        border-radius: 6px;
+        box-shadow: var(--shadow-raised);
+        overflow: hidden;
+        transition:
+          box-shadow 0.28s var(--ease-theme),
+          background 0.28s var(--ease-theme);
+      }
+
+      .pullquote p {
+        font-family: var(--serif);
+        font-style: normal;
+        font-weight: 500;
+        font-size: clamp(24px, 3.4vw, 30px);
+        line-height: 1.36;
+        color: var(--ink);
+        margin: 0;
+        max-width: 32ch;
+        text-wrap: balance;
+      }
+      .pullquote cite {
+        display: block;
+        font-family: var(--serif);
+        font-style: normal;
+        font-variant-caps: small-caps;
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        margin-top: 20px;
+      }
+
+      /* ---------- Lesson ---------- */
+      .lesson {
+        margin-top: 8px;
+        padding: 30px 0 0;
+        border-top: 2px solid var(--accent);
+      }
+      .lesson .phase-num {
+        margin-bottom: 12px;
+      }
+      .lesson .phase-num::before {
+        display: none;
+      }
+      .lesson p {
+        font-family: var(--serif);
+        font-size: var(--t-lift);
+        line-height: 1.44;
+        color: var(--ink);
+        margin: 0;
+        max-width: 48ch;
+        text-wrap: pretty;
+      }
+      .lesson em {
+        font-style: normal;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      /* ---------- Colophon footer ---------- */
+      footer {
+        margin-top: 64px;
+        padding-top: 28px;
+        border-top: 1px solid var(--rule);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+      footer .mark {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      footer .panot {
+        width: 24px;
+        height: 24px;
+        color: var(--accent);
+        flex: 0 0 auto;
+      }
+      footer .colophon {
+        font-family: var(--serif);
+        font-size: var(--t-caption);
+        color: var(--ink-2);
+        line-height: 1.5;
+      }
+      footer .colophon strong {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      footer .colophon a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid var(--rule);
+      }
+      footer .colophon a:hover {
+        border-bottom-color: var(--accent);
+      }
+      footer .pagemark {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-4);
+        letter-spacing: 0.08em;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      footer .pagemark a {
+        color: var(--ink-4);
+        text-decoration: none;
+        border-bottom: 1px solid var(--rule);
+        transition: color 0.15s;
+      }
+      footer .pagemark a:hover {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+
+      /* ---------- Theme switch: sun / moon icon buttons in a skeuomorphic
+         groove. The container is a recessed track (inset shadow); the
+         active button is a raised key (drop shadow + inset highlight).
+         Hover gated to real pointers only. ---------- */
+      .theme-switch {
+        position: fixed;
+        top: 22px;
+        right: 22px;
+        z-index: 50;
+        display: flex;
+        gap: 3px;
+        padding: 4px;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--rule);
+        box-shadow:
+          inset 0 1px 3px rgba(26, 22, 20, 0.14),
+          inset 0 0 0 0.5px rgba(26, 22, 20, 0.06),
+          0 1px 0 rgba(255, 255, 255, 0.7);
+        transition:
+          box-shadow 0.28s var(--ease-theme),
+          background 0.28s var(--ease-theme),
+          border-color 0.28s var(--ease-theme);
+      }
+      [data-theme='dark'] .theme-switch {
+        box-shadow:
+          inset 0 1px 3px rgba(0, 0, 0, 0.35),
+          inset 0 0 0 0.5px rgba(0, 0, 0, 0.2),
+          0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+      .theme-switch button {
+        appearance: none;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--ink-3);
+        border-radius: 7px;
+        padding: 0;
+        transform: scale(1);
+        transition:
+          background 0.18s var(--ease-out),
+          color 0.18s var(--ease-out),
+          box-shadow 0.18s var(--ease-out),
+          transform 0.14s var(--ease-out);
+      }
+      .theme-switch button[aria-pressed='true'] {
+        background: var(--accent);
+        color: var(--on-accent);
+        box-shadow:
+          0 1px 3px rgba(26, 22, 20, 0.25),
+          0 0.5px 0 rgba(26, 22, 20, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+      [data-theme='dark'] .theme-switch button[aria-pressed='true'] {
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .theme-switch button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        z-index: 1;
+      }
+      .theme-switch button:active {
+        transform: scale(0.94);
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .theme-switch button:not([aria-pressed='true']):hover {
+          color: var(--ink);
+          background: var(--paper);
+          box-shadow: 0 1px 2px rgba(26, 22, 20, 0.1);
+        }
+      }
+
+      ::selection {
+        background: var(--accent-tint);
+        color: var(--ink);
+      }
+
+      /* ---------- Print: A4 paper dossier with centred folios ---------- */
+      @page {
+        size: A4;
+        margin: 18mm 20mm 20mm;
+        /* the folio: a centred page number, the reference's "1", "2", "3" */
+        @bottom-center {
+          content: counter(page);
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9pt;
+          color: #9a9186;
+        }
+      }
+      @media print {
+        body {
+          background: var(--bone);
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        body::before {
+          display: none; /* no grain field in print */
+        }
+        .cover {
+          padding: 28px 0 0;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .cover-inner,
+        .sheet {
+          max-width: 100%;
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .sheet {
+          padding-top: 44px;
+          box-shadow: none; /* no material on paper */
+        }
+        /* exhibits go flat: a hairline, no cast shadow, in print */
+        .figure,
+        .table-wrap,
+        .pullquote {
+          box-shadow: none;
+        }
+        .emblem img {
+          width: 150px;
+        }
+        .theme-switch {
+          display: none;
+        }
+        /* each part opens a fresh page, the way the reference breaks parts */
+        .part {
+          break-before: page;
+          break-after: avoid;
+        }
+        .phase,
+        .lesson,
+        .dossier,
+        .pullquote,
+        .figure {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          font-size: 18px;
+        }
+        .cover {
+          padding: 40px 0 0;
+        }
+        .cover-inner,
+        .sheet {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .sheet {
+          box-shadow: none;
+        }
+        .figure {
+          padding: 22px 20px 20px;
+        }
+        .phase-body th,
+        .phase-body td {
+          padding: 14px 16px;
+        }
+        .pullquote {
+          padding: 26px 24px 24px 28px;
+        }
+        .cover-top {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .cover-foot {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .emblem img {
+          width: 138px;
+        }
+        .dossier {
+          grid-template-columns: 1fr;
+          gap: 36px;
+        }
+        .definition-grid {
+          grid-template-columns: 1fr;
+        }
+        .phase h3,
+        .part h2 {
+          font-size: 25px;
+        }
+        .phase-body p {
+          text-align: left;
+        }
+        .plot-name {
+          font-size: 13px;
+        }
+        .theme-switch {
+          top: 14px;
+          right: 14px;
+        }
+        footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+      }
+
+      /* ---------- Reveal on scroll: in-flow blocks lift in as they enter
+         the viewport (ease-out, transform + opacity only, once). Gated on
+         .reveal-on, set in <head> before paint, so no-JS shows everything
+         and there is no flash. Print and reduced-motion force everything
+         visible. ---------- */
+      .reveal-on .part,
+      .reveal-on .phase,
+      .reveal-on .figure,
+      .reveal-on .table-wrap,
+      .reveal-on .callout,
+      .reveal-on .lesson {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+          opacity 0.7s var(--ease-out),
+          transform 0.7s var(--ease-out);
+      }
+      .reveal-on .is-in {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-on .players li {
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.5s var(--ease-out),
+          transform 0.5s var(--ease-out);
+      }
+      .reveal-on .players.is-in li {
+        opacity: 1;
+        transform: none;
+      }
+      .reveal-on .players.is-in li:nth-child(2) {
+        transition-delay: 45ms;
+      }
+      .reveal-on .players.is-in li:nth-child(3) {
+        transition-delay: 90ms;
+      }
+      .reveal-on .players.is-in li:nth-child(4) {
+        transition-delay: 135ms;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .reveal-on .part,
+        .reveal-on .phase,
+        .reveal-on .figure,
+        .reveal-on .table-wrap,
+        .reveal-on .callout,
+        .reveal-on .lesson,
+        .reveal-on .players li {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+      @media print {
+        .reveal-on .part,
+        .reveal-on .phase,
+        .reveal-on .figure,
+        .reveal-on .table-wrap,
+        .reveal-on .callout,
+        .reveal-on .lesson,
+        .reveal-on .players li {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
+
+      /* ---------- Differentiated reveals per phase ----------------------
+         Override the base .phase rule via source order (same specificity).
+         .phase-N.is-in has one extra class → wins over .reveal-on .is-in.
+         Easing: --ease-out for opacity, quint/quart for transforms.
+         -------------------------------------------------------------- */
+      .reveal-on .phase-1,
+      .reveal-on .phase-6 { transform: none; }          /* pure fade  */
+      .reveal-on .phase-6 { transition-duration: 0.82s; } /* settled    */
+      .reveal-on .phase-2 { transform: translateX(-14px); } /* lateral scan */
+      .reveal-on .phase-3 { transform: translateY(-12px); } /* descends   */
+      .reveal-on .phase-4 {
+        transform: scale(0.97);                           /* convergence */
+        transition:
+          opacity 0.62s var(--ease-out),
+          transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .reveal-on .phase-1.is-in,
+      .reveal-on .phase-2.is-in,
+      .reveal-on .phase-3.is-in,
+      .reveal-on .phase-4.is-in,
+      .reveal-on .phase-5.is-in,
+      .reveal-on .phase-6.is-in { opacity: 1; transform: none; }
+
+      /* Parts: slow pure fade, no drift */
+      .reveal-on .part { transform: none; transition: opacity 0.55s var(--ease-out); }
+      .reveal-on .part.is-in { opacity: 1; transform: none; }
+
+      /* Figure: focus-scale in */
+      .reveal-on .figure {
+        transform: scale(0.99);
+        transition:
+          opacity 0.7s var(--ease-out),
+          transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      /* Pullquote: add to reveal system */
+      .reveal-on .pullquote {
+        opacity: 0;
+        transform: scale(0.98);
+        transition:
+          opacity 0.68s var(--ease-out),
+          transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .reveal-on .pullquote.is-in { opacity: 1; transform: none; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal-on .phase-1, .reveal-on .phase-2, .reveal-on .phase-3,
+        .reveal-on .phase-4, .reveal-on .phase-5, .reveal-on .phase-6,
+        .reveal-on .pullquote {
+          opacity: 1; transform: none; transition: none;
+        }
+      }
+      @media print {
+        .reveal-on .pullquote { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+    <script>
+      ;(function () {
+        var pref = null
+        try { pref = localStorage.getItem('gt-theme') } catch (e) {}
+        if (!pref && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-theme', 'dark')
+        }
+      })()
+      document.documentElement.classList.add('reveal-on')
+    </script>
+  </head>
+  <body>
+    <nav class="theme-switch" aria-label="Theme">
+      <button type="button" data-set="light" aria-pressed="true" aria-label="Light mode">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="7.05" y2="16.95"/><line x1="16.95" y1="7.05" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <button type="button" data-set="dark" aria-pressed="false" aria-label="Dark mode">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </nav>
+
+    <header class="cover">
+      <div class="cover-inner">
+        <div class="cover-top">
+          <p class="kicker">Game-Theorist · Six-Phase Analysis</p>
+          <span class="kicker-meta">{{SUBTITLE}}</span>
+        </div>
+        <div class="emblem">
+          <img
+            src="game-theorist-knight.webp"
+            alt="Game-theorist brass knight emblem"
+            onerror="this.style.display = 'none'"
+          />
+        </div>
+        <p class="cover-eyebrow">{{EYEBROW}}</p>
+        <h1>{{TITLE}}</h1>
+        <p class="deck">{{DECK}}</p>
+        <div class="cover-foot">
+          <span class="by">{{COVER_BY}}</span>
+          <span class="when">{{COVER_WHEN}}</span>
+        </div>
+      </div>
+      <div class="cover-plinth"></div>
+    </header>
+
+    <main class="sheet">
+      <section class="dossier">
+        <div>
+          <p class="dossier-label">Players</p>
+          <ul class="players">
+            {{PLAYERS}}
+          </ul>
+        </div>
+        <div>
+          <dl class="facts">
+            <dt>Game type</dt>
+            <dd>{{GAME_TYPE}}</dd>
+            <dt>Lead framework</dt>
+            <dd>{{FRAMEWORK}}</dd>
+          </dl>
+        </div>
+      </section>
+
+      <section class="definitions" aria-labelledby="definitions-title">
+        <h2 id="definitions-title">Terms in plain English</h2>
+        <p class="definitions-intro">
+          Read this first if the theory words are new. The analysis uses a few technical terms, but
+          the ideas underneath are simple.
+        </p>
+        <dl class="definition-grid">
+          <div>
+            <dt>Player</dt>
+            <dd>
+              Someone whose choices can change the outcome: a company, person, regulator, buyer,
+              or rival.
+            </dd>
+          </div>
+          <div>
+            <dt>Strategy</dt>
+            <dd>
+              A move a player can make. Raise price, hold price, cooperate, defect, wait, signal,
+              commit.
+            </dd>
+          </div>
+          <div>
+            <dt>Payoff</dt>
+            <dd>What a player gets from an outcome. The number means preference, not always money.</dd>
+          </div>
+          <div>
+            <dt>Dominant strategy</dt>
+            <dd>A move that beats the alternatives no matter what the other player does.</dd>
+          </div>
+          <div>
+            <dt>Nash equilibrium</dt>
+            <dd>An outcome where no player can improve their position by changing their move alone.</dd>
+          </div>
+          <div>
+            <dt>Repeated game</dt>
+            <dd>The same players meet again. Reputation, punishment, and trust start to matter.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- ============ PART I)  ·  Phases 1 to 2 ============ -->
+      <section class="part">
+        <div class="part-tick"></div>
+        <p class="part-kicker">{{PART_1_KICKER}}</p>
+        <h2>{{PART_1_TITLE}}</h2>
+        <p>{{PART_1_FRAME}}</p>
+      </section>
+
+      <section class="phase phase-1" id="phase-1">
+        <div class="phase-head">
+          <p class="phase-num">Phase 1</p>
+          <h3>Deconstruction</h3>
+        </div>
+        <div class="phase-body">{{PHASE_1_BODY}}</div>
+      </section>
+
+      <section class="phase phase-2" id="phase-2">
+        <div class="phase-head">
+          <p class="phase-num">Phase 2</p>
+          <h3>Incentive Mapping</h3>
+        </div>
+        <div class="phase-body">
+          {{PHASE_2_BODY}}
+
+          <!-- ============ THE DIAGRAM ============
+            Replace {{DIAGRAM}} with ONE inline SVG plot, drawn in the accent.
+            Quadrant template below: re-label the two axes to the central insight,
+            re-plot each player as a named point, shade the quadrant where the game is
+            decided, mark ONE focal point "is-focal" and the high-relevance points
+            "is-high". Keep the legend and caption. If a plot would be forced, delete
+            this whole <figure> block. A worked instance is in
+            examples/analysis-example.html ("Figure 1").
+
+          <figure class="figure">
+            <figcaption class="figure-label">Figure 1 · {{X_AXIS}} against {{Y_AXIS}}</figcaption>
+            <svg viewBox="0 0 640 440" role="img" aria-label="{{DIAGRAM_ALT}}">
+              <rect class="plot-quadrant" x="64" y="40" width="528" height="170" />
+              <text class="plot-zone" x="582" y="60" text-anchor="end">{{ZONE_LABEL}}</text>
+              <line class="plot-divider" x1="328" y1="40" x2="328" y2="380" />
+              <line class="plot-divider" x1="64" y1="210" x2="592" y2="210" />
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7"
+                  markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0 0 L9 5 L0 10 z" fill="currentColor" />
+                </marker>
+              </defs>
+              <g style="color: var(--ink-3)">
+                <line class="plot-axis" x1="64" y1="380" x2="600" y2="380" marker-end="url(#arrow)" />
+                <line class="plot-axis" x1="64" y1="380" x2="64" y2="34" marker-end="url(#arrow)" />
+              </g>
+              <text class="plot-axis-label" x="328" y="416" text-anchor="middle">{{X_AXIS}}</text>
+              <text class="plot-axis-label" x="-210" y="22" text-anchor="middle"
+                transform="rotate(-90)">{{Y_AXIS}}</text>
+              <text class="plot-pole" x="64" y="398" text-anchor="start">{{X_LOW}}</text>
+              <text class="plot-pole" x="592" y="398" text-anchor="end">{{X_HIGH}}</text>
+              <text class="plot-pole" x="58" y="380" text-anchor="end" transform="rotate(-90 58 380)">{{Y_LOW}}</text>
+              <text class="plot-pole" x="58" y="44" text-anchor="start" transform="rotate(-90 58 44)">{{Y_HIGH}}</text>
+
+              <circle class="plot-dot is-focal" cx="494" cy="320" r="8" />
+              <text class="plot-name is-focal" x="494" y="350" text-anchor="middle">{{POINT_FOCAL}}</text>
+              <circle class="plot-dot is-high" cx="300" cy="78" r="7" />
+              <text class="plot-name" x="300" y="68" text-anchor="middle">{{POINT_2}}</text>
+              <circle class="plot-dot is-high" cx="438" cy="120" r="7" />
+              <text class="plot-name" x="450" y="125" text-anchor="start">{{POINT_3}}</text>
+              <circle class="plot-dot is-high" cx="178" cy="138" r="7" />
+              <text class="plot-name" x="178" y="128" text-anchor="middle">{{POINT_4}}</text>
+            </svg>
+            <div class="figure-legend">
+              <span class="key"><span class="swatch focal"></span>Focal · {{FOCAL_NOTE}}</span>
+              <span class="key"><span class="swatch high"></span>{{HIGH_NOTE}}</span>
+              <span class="key"><span class="swatch"></span>Plotted player</span>
+            </div>
+            <p class="figure-caption"><strong>Figure 1.</strong> {{FIGURE_CAPTION}}</p>
+          </figure>
+          ============ END DIAGRAM ============ -->
+        </div>
+      </section>
+
+      <!-- ============ PART II  ·  Phases 3 to 4 ============ -->
+      <section class="part">
+        <div class="part-tick"></div>
+        <p class="part-kicker">{{PART_2_KICKER}}</p>
+        <h2>{{PART_2_TITLE}}</h2>
+        <p>{{PART_2_FRAME}}</p>
+      </section>
+
+      <section class="phase phase-3" id="phase-3">
+        <div class="phase-head">
+          <p class="phase-num">Phase 3</p>
+          <h3>Strategy Space</h3>
+        </div>
+        <div class="phase-body">{{PHASE_3_BODY}}</div>
+      </section>
+
+      <blockquote class="pullquote">
+        <p>{{PULL_QUOTE}}</p>
+        <cite>{{PULL_SOURCE}}</cite>
+      </blockquote>
+
+      <section class="phase equilibrium phase-4" id="phase-4">
+        <div class="phase-head">
+          <p class="phase-num">Phase 4</p>
+          <h3>Equilibrium</h3>
+        </div>
+        <div class="phase-body">{{PHASE_4_BODY}}</div>
+      </section>
+
+      <!-- ============ PART III  ·  Phases 5 to 6 ============ -->
+      <section class="part">
+        <div class="part-tick"></div>
+        <p class="part-kicker">{{PART_3_KICKER}}</p>
+        <h2>{{PART_3_TITLE}}</h2>
+        <p>{{PART_3_FRAME}}</p>
+      </section>
+
+      <section class="phase phase-5" id="phase-5">
+        <div class="phase-head">
+          <p class="phase-num">Phase 5</p>
+          <h3>Recommendation</h3>
+        </div>
+        <div class="phase-body">{{PHASE_5_BODY}}</div>
+      </section>
+
+      <section class="phase phase-6" id="phase-6">
+        <div class="phase-head">
+          <p class="phase-num">Phase 6</p>
+          <h3>Dynamic Adaptation</h3>
+        </div>
+        <div class="phase-body">{{PHASE_6_BODY}}</div>
+      </section>
+
+      <div class="lesson">
+        <p class="phase-num">Lesson</p>
+        <p>{{LESSON}}</p>
+      </div>
+
+      <footer>
+        <div class="mark">
+          <svg
+            class="panot"
+            viewBox="-0.38 -0.37 32.75 32.76"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              fill="currentColor"
+              d="M14.22 29.79l-0.25-0.26-0.37-0.36-0.35-0.35-0.35-0.34-0.42-0.42-0.61-0.61-0.91-0.9c-0.69 0.47-1.76 0.63-2.54 0.55-0.71-0.07-1.38-0.31-1.95-0.75-0.13-0.1-0.25-0.19-0.36-0.3-0.23-0.23-0.47-0.5-0.64-0.78-0.38-0.64-0.56-1.37-0.53-2.12s0.19-1.36 0.56-2.04c-0.05-0.07-0.1-0.13-0.17-0.19l-1.88-1.87-0.15-0.15-1.44-1.44-0.62-0.62-0.43-0.44s-0.11-0.12-0.14-0.18c-0.1-0.18-0.04-0.4 0.1-0.54l3.59-3.6 1.16-1.15-0.27-0.6c-0.34-0.77-0.4-1.82-0.18-2.64 0.42-1.54 1.74-2.66 3.35-2.83 0.27-0.03 0.53 0 0.8 0l0.35 0.05c0.51 0.07 0.99 0.28 1.44 0.53l3.89-3.9 0.75-0.74c0.1-0.09 0.23-0.19 0.37-0.17s0.27 0.1 0.37 0.2l1.99 1.99 0.42 0.42 2.19 2.19s0.11-0.04 0.14-0.06c0.48-0.26 1.01-0.43 1.56-0.49 0.33-0.04 0.85-0.02 1.18 0.03 1.05 0.19 1.95 0.8 2.54 1.67 0.46 0.68 0.64 1.46 0.62 2.29-0.01 0.57-0.14 1.12-0.38 1.63l-0.2 0.41 1.38 1.37 2.15 2.15 1.26 1.27c0.19 0.19 0.16 0.46-0.01 0.63l-0.59 0.61-0.48 0.48-0.38 0.38-3.25 3.25c-0.1 0.1-0.02 0.09 0.09 0.33 0.38 0.87 0.51 1.77 0.33 2.7-0.25 1.3-1.21 2.38-2.45 2.82-0.25 0.09-0.49 0.14-0.75 0.18-0.88 0.14-1.96-0.05-2.73-0.52-0.08 0.05-0.12 0.12-0.19 0.19l-2 2-0.18 0.18-2.3 2.3c-0.12 0.12-0.29 0.19-0.43 0.15-0.2-0.05-0.33-0.2-0.46-0.34l-0.31-0.31-0.17-0.17-0.33-0.33-0.27-0.27-0.16-0.15z m4.71-22.47l0.32-0.33 0.68-0.69s0.08-0.06 0.11-0.11l-1.86-1.88-0.95-0.95-0.54-0.54-0.62-0.63s-0.06-0.05-0.07-0.03l-0.06 0.06-3.98 3.98c0.09 0.08 0.15 0.13 0.22 0.2l0.82 0.84c0.38 0.39 0.8 0.69 1.3 0.92 0.7 0.32 1.4 0.37 2.16 0.32 0.91-0.07 1.84-0.48 2.48-1.14z m3.56 12.46c-0.01-0.3-0.08-0.58-0.19-0.86-0.05-0.11-0.09-0.22-0.15-0.32-0.61-1.05-0.83-2.17-0.67-3.38 0.1-0.76 0.33-1.26 0.69-1.93 0.33-0.62 0.42-1.35 0.18-2.02-0.34-0.97-1.2-1.64-2.22-1.74-0.46-0.05-0.91 0.04-1.34 0.23-0.5 0.22-0.98 0.46-1.51 0.59-0.72 0.18-1.61 0.2-2.33 0.05-0.96-0.19-1.19-0.45-2.01-0.74-0.3-0.1-0.6-0.14-0.92-0.16-0.42 0.04-0.81 0.13-1.19 0.34-0.45 0.25-0.82 0.63-1.06 1.08-0.22 0.41-0.29 0.83-0.27 1.29s0.19 0.9 0.43 1.32c0.64 1.12 0.77 2.55 0.44 3.79-0.12 0.45-0.31 0.85-0.53 1.25-0.19 0.34-0.31 0.7-0.35 1.1-0.09 1.02 0.46 1.96 1.34 2.45 0.31 0.17 0.63 0.3 0.99 0.33 0.54 0.05 1.01-0.05 1.49-0.29 0.33-0.16 0.63-0.3 0.97-0.43 0.74-0.27 1.66-0.35 2.44-0.25 0.65 0.11 1.13 0.28 1.71 0.57 0.38 0.19 0.75 0.35 1.18 0.39 0.22 0.02 0.44 0.03 0.65 0 1.3-0.22 2.28-1.35 2.22-2.67z m1.9-1.04c0.17 0.19 0.33 0.35 0.5 0.52l0.86 0.84 0.2-0.18 3.21-3.19 0.72-0.71-4.14-4.14c-0.12 0.07-0.19 0.17-0.28 0.26l-0.74 0.73c-0.48 0.47-0.86 0.99-1.07 1.63-0.12 0.34-0.2 0.68-0.22 1.04-0.03 0.49-0.02 1.03 0.1 1.51 0.16 0.62 0.43 1.2 0.86 1.7z m-17.38 0.6c0.33-0.33 0.65-0.64 0.9-1.03 0.26-0.41 0.45-0.83 0.56-1.3 0.14-0.66 0.14-1.33 0-1.99-0.16-0.72-0.45-1.37-0.97-1.9l-1.24-1.24-2.06 2.07-2.06 2.08 1.88 1.88 0.87 0.87 1.35 1.35 0.78-0.78z m8.99 10.53l2.51-2.5 0.42-0.41 1.13-1.13-0.84-0.84c-0.28-0.28-0.54-0.55-0.86-0.79-1.53-1.08-3.86-0.95-5.19 0.39l-1.24 1.24 0.58 0.56 1.28 1.28 0.38 0.38 0.51 0.51 0.62 0.62 0.69 0.69z"
+            />
+          </svg>
+          <div class="colophon">{{AUTHOR_LINE}}</div>
+        </div>
+        <div class="pagemark">
+          <a class="colophon-link" href="https://saltsilicon.com" target="_blank" rel="noopener"
+            >saltsilicon.com</a
+          >
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      ;(function () {
+        var root = document.documentElement
+        var buttons = document.querySelectorAll('.theme-switch button')
+        var KEY = 'gt-theme'
+        var stored = null
+        try {
+          stored = localStorage.getItem(KEY)
+        } catch (e) {}
+        if (stored === 'light' || stored === 'dark') {
+          root.setAttribute('data-theme', stored)
+        }
+        function sync() {
+          var current = root.getAttribute('data-theme')
+          buttons.forEach(function (b) {
+            b.setAttribute('aria-pressed', b.dataset.set === current ? 'true' : 'false')
+          })
+        }
+        sync()
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () {
+            root.setAttribute('data-theme', b.dataset.set)
+            try {
+              localStorage.setItem(KEY, b.dataset.set)
+            } catch (e) {}
+            sync()
+          })
+        })
+
+        // Reveal in-flow blocks as they scroll into view (once each).
+        var sel = '.part, .phase, .figure, .table-wrap, .callout, .lesson, .players, .pullquote'
+        var blocks = document.querySelectorAll(sel)
+        var reduce = false
+        try {
+          reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        } catch (e) {}
+        if (reduce || !('IntersectionObserver' in window)) {
+          blocks.forEach(function (el) {
+            el.classList.add('is-in')
+          })
+        } else {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('is-in')
+                  io.unobserve(entry.target)
+                }
+              })
+            },
+            { rootMargin: '0px 0px -10% 0px', threshold: 0.1 }
+          )
+          blocks.forEach(function (el) {
+            io.observe(el)
+          })
+        }
+      })()
+    </script>
+  </body>
+</html>

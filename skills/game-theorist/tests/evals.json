@@ -1,0 +1,230 @@
+{
+  "skill": "game-theorist",
+  "version": "1.0.0",
+  "judge": {
+    "primary": {
+      "model": "gemini-3-pro-preview",
+      "endpoint_env_key": "JUDGE_ENDPOINT",
+      "auth_env_key": "JUDGE_API_KEY",
+      "rationale": "Non-Claude model; avoids self-enhancement bias when evaluating Claude outputs"
+    },
+    "cross_check": {
+      "model": "gpt-5.5",
+      "endpoint_env_key": "JUDGE_ENDPOINT",
+      "auth_env_key": "JUDGE_API_KEY",
+      "rationale": "Independent cross-check from a second provider family"
+    },
+    "scoring_mode": "rubric_weighted",
+    "rubric_file": "rubric.md",
+    "agreement_threshold": 0.15
+  },
+  "pass_threshold": 0.7,
+  "high_stakes_threshold": 0.9,
+  "baseline_note": "Score delta = (score with skill active) minus (score with raw model, no skill prompt). The baseline measures the framework's net contribution, not absolute model quality.",
+  "cases": [
+    {
+      "id": "phase-seq-pricing-war",
+      "type": "phase_sequencing",
+      "difficulty": "medium",
+      "input": "We are a B2B SaaS company. Our main competitor just cut prices by 30%. Our sales team is panicking and wants us to match immediately. What should we do?",
+      "expected_behaviour": [
+        "Skill opens with exactly ONE clarifying question about the situation before any analysis",
+        "Phase 1 (Deconstruction) is presented first and alone; no subsequent phases appear in the same response",
+        "User must supply input before Phase 2 begins",
+        "Each of the six phases appears in strict sequence across six separate turns",
+        "Phase 1 names the game type explicitly (zero-sum or mixed) and assigns a repetition label: one-shot, repeated-finite, or repeated-indefinite",
+        "Phase 1 asks user to confirm the repetition label before proceeding",
+        "The word 'pricing war' or equivalent competitive dynamic is framed as a sequential or simultaneous game, not described generically",
+        "Phase 5 ends with a concrete primary move, not a conditional hedge"
+      ],
+      "notes": "Core contract test. The six phases must never appear in a single response. Failing this case = automatic fail on process-fidelity gate."
+    },
+    {
+      "id": "phase-seq-partnership-split",
+      "type": "phase_sequencing",
+      "difficulty": "medium",
+      "input": "My co-founder wants to leave and is demanding 40% of the company. We agreed on 30% vesting over four years. He has done about 18 months. We have a term sheet from a VC that is contingent on cap-table clean-up. This is urgent.",
+      "expected_behaviour": [
+        "Skill opens with one clarifying question; does not pre-empt with analysis",
+        "Phase 1 identifies at minimum three players: user, co-founder, and VC (silent player with veto)",
+        "Phase 1 classifies timing as sequential (VC term sheet creates a deadline)",
+        "Phase 2 maps the co-founder's BATNA explicitly (what does he do if he gets nothing?)",
+        "Phase 2 notes the VC as an organisation-level player and flags that their internal decision-making unit should be assessed",
+        "No phase is skipped; Phase 3 enumerates the user's strategy space before a recommendation appears",
+        "Phase 5 includes at least one concrete commitment device or signalling move",
+        "Phases appear strictly one at a time"
+      ],
+      "notes": "Tests identification of silent third-party players and coalition mapping hint."
+    },
+    {
+      "id": "no-it-depends-salary-negotiation",
+      "type": "no_it_depends",
+      "difficulty": "simple",
+      "input": "I have a job offer for 120k. I know the role was previously budgeted at 150k. My current salary is 100k. Should I counter and if so at what number?",
+      "expected_behaviour": [
+        "Phase 5 recommendation names a specific counter number or an explicit range with stated conditions",
+        "The phrase 'it depends' does not appear in the recommendation",
+        "Any conditionality is stated as: 'Move X if condition Y; move Z if condition W' -- not a vague hedge",
+        "Phase 4 equilibrium section names the Nash equilibrium or explains why no pure-strategy equilibrium exists",
+        "Phase 3 eliminates at least one dominated strategy explicitly (e.g. accepting at 120k without countering)"
+      ],
+      "notes": "Validates the hard rule: end every analysis with a concrete move plus explicit conditions, never a hedge."
+    },
+    {
+      "id": "no-trigger-npv-irr",
+      "type": "should_not_trigger",
+      "difficulty": "simple",
+      "input": "I need to calculate the NPV and IRR of a project with an initial outlay of 500k and cash flows of 80k per year for 8 years, discount rate 10%.",
+      "expected_behaviour": [
+        "Skill declines to run the six-phase framework",
+        "Skill explains this is a financial calculation, not a strategic interaction between players",
+        "Skill redirects to an appropriate tool or offers to do the arithmetic directly without imposing a game-theory frame",
+        "No Phase 1 Deconstruction is initiated"
+      ],
+      "notes": "NPV/IRR is explicitly listed as a non-trigger in SKILL.md. Skill must not force a game-theory frame onto a calculation task."
+    },
+    {
+      "id": "no-trigger-email-draft",
+      "type": "should_not_trigger",
+      "difficulty": "simple",
+      "input": "Can you draft a follow-up email to a prospect who went quiet after our demo last week?",
+      "expected_behaviour": [
+        "Skill declines to run the six-phase framework for pure email drafting",
+        "Skill may offer to draft the email directly",
+        "If skill detects a strategic element (why did they go quiet?), it may offer to run a brief strategic analysis -- but must ask first rather than assume",
+        "No full six-phase sequence is initiated without user confirmation"
+      ],
+      "notes": "Email drafting is an explicit non-trigger. If there is a latent strategic question, skill may surface it but must not force the framework."
+    },
+    {
+      "id": "no-trigger-yes-no-job-offer",
+      "type": "should_not_trigger",
+      "difficulty": "simple",
+      "input": "I got a job offer from a fintech startup. Should I take it?",
+      "expected_behaviour": [
+        "Skill recognises this as a simple yes/no personal decision with a single decision-maker",
+        "Skill does NOT initiate game-theory analysis (no competing actors with independent strategic interests)",
+        "Skill explains why game-theory framework does not apply here",
+        "Skill may redirect to a decision-analysis approach or ask clarifying questions to check if competing offers exist",
+        "No Phase 1 initiated"
+      ],
+      "notes": "Contrast case to the competing-offers case below. Single offer, single actor = not a game."
+    },
+    {
+      "id": "no-trigger-educational-nash",
+      "type": "should_not_trigger",
+      "difficulty": "simple",
+      "input": "What does Nash equilibrium mean? Can you explain it with an example?",
+      "expected_behaviour": [
+        "Skill answers the educational question directly without initiating the six-phase framework",
+        "Skill does not ask 'describe your situation' as an opening",
+        "Skill provides a clear definition and a concrete example (e.g. Prisoner's Dilemma)",
+        "No Phase 1 Deconstruction is initiated",
+        "Response is concise and educational in tone, not strategist-persona-driven"
+      ],
+      "notes": "Pure educational question. Skill must not treat every mention of game-theory vocabulary as a trigger for the full framework."
+    },
+    {
+      "id": "happy-path-investor-term-sheet",
+      "type": "happy_path",
+      "difficulty": "complex",
+      "input": "Two VCs are both interested in leading our Series A. VC-A offered 8M at 30M pre-money. VC-B offered 8M at 25M pre-money but says the offer expires in 48 hours. I want VC-A's valuation but I am worried VC-B will walk. How do I handle this?",
+      "expected_behaviour": [
+        "Phase 1 identifies at least three players: founder, VC-A, VC-B; classifies it as a bargaining game with competitive dynamics",
+        "Phase 1 names the 48-hour deadline as a commitment device by VC-B and flags it for analysis",
+        "Phase 2 maps BATNA for both VCs: VC-A's BATNA is investing in another deal; VC-B's BATNA is the same",
+        "Phase 2 assesses VC-B's deadline credibility: is it a real constraint or a pressure tactic?",
+        "Phase 3 enumerates at least three strategies: accept VC-B, counter VC-B, use VC-B as leverage with VC-A",
+        "Phase 4 identifies the coordination game dynamic between the two VCs and the auction-theory element",
+        "Phase 5 produces a concrete sequencing recommendation: who to contact first, what to reveal, what to withhold",
+        "Phase 5 includes a signalling move: how to credibly communicate that a competing offer exists"
+      ],
+      "notes": "Classic competitive term-sheet scenario. Tests auction theory, signalling, and sequencing."
+    },
+    {
+      "id": "happy-path-key-employee-counter",
+      "type": "happy_path",
+      "difficulty": "medium",
+      "input": "Our best engineer just told us he has an offer from Google for 30% more than we pay him. We want to keep him. What is the game here?",
+      "expected_behaviour": [
+        "Phase 1 classifies game type correctly: bargaining, repeated game (ongoing employment relationship)",
+        "Phase 1 identifies Google as a third player whose offer is a real outside option, not just a threat",
+        "Phase 2 maps the engineer's true objectives beyond money (autonomy, prestige, growth, team quality)",
+        "Phase 2 maps the company's constraints: budget, precedent risk for other employees, equity capacity",
+        "Phase 3 enumerates at least: match fully, match partially plus non-cash, counter with equity, let him go",
+        "Phase 3 flags precedent risk as a game that extends beyond this one player (other employees watching)",
+        "Phase 5 recommendation is concrete: which option to lead with and at what number or equity amount",
+        "Phase 5 includes a contingency for the case where the engineer still leaves after a counter"
+      ],
+      "notes": "Tests precedent/reputation effects spillover to a broader employee population."
+    },
+    {
+      "id": "complex-no-clean-equilibrium",
+      "type": "happy_path",
+      "difficulty": "very-complex",
+      "input": "I run a marketplace. We have two large supply-side partners who together provide 70% of our inventory. They have figured this out and are now both threatening to negotiate harder simultaneously. Neither wants to defect first and look weak to the other. I need to negotiate with both without triggering a united front.",
+      "expected_behaviour": [
+        "Phase 4 explicitly states that no clean Nash equilibrium exists in this three-player mixed game",
+        "Phase 4 does not force a single clean resolution; it names this as a coordination problem with multiple potential equilibria",
+        "Skill explicitly says 'no dominant strategy' rather than manufacturing a false clean answer",
+        "Phase 5 still ends with a concrete move despite the lack of clean equilibrium: play for robustness, shape the focal point, or use Stackelberg leader positioning",
+        "Phase 3 enumerates divide-and-conquer strategies (negotiate separately, break the united front before it forms)",
+        "Phase 2 maps each supplier's BATNA independently and notes they differ",
+        "Phase 5 includes a mechanism-design move: can the marketplace add a new supply source to change the added-value calculation?",
+        "PARTS analysis (Phase 6) suggests a lever to change the game structure, not just play better within it"
+      ],
+      "notes": "Edge case 1 variant. Tests the skill's willingness to name a missing equilibrium and still deliver a concrete move."
+    },
+    {
+      "id": "complex-mutual-escalation-lock",
+      "type": "happy_path",
+      "difficulty": "very-complex",
+      "input": "We have a supplier contract dispute. We have threatened to sue and go public with their quality failures. They have threatened to terminate supply immediately, which would halt our production. Both of us have made these threats publicly. Neither of us can back down without losing face. The lawyers are billing by the hour and nothing is moving.",
+      "expected_behaviour": [
+        "Phase 4 explicitly runs the mutual escalation lock diagnostic from SKILL.md",
+        "Phase 4 asks (or infers): 'If both sides execute their threats simultaneously, who wins?' and answers 'neither'",
+        "Phase 4 concludes this is a mutual lock, not a test of resolve, and flags this explicitly",
+        "Phase 5 primary recommendation is unilateral conditional de-escalation, not 'hold firm'",
+        "Phase 5 de-escalation move includes all three required elements: unilateral, framed as confidence not weakness, conditional in language while unconditional in form",
+        "Phase 5 does not recommend a joint negotiation call as the first move (that requires pre-coordination)",
+        "Phase 3 identifies face-saving mechanisms for both parties before proposing any counter",
+        "Phase 5 contingency addresses the case where de-escalation is not reciprocated"
+      ],
+      "notes": "Directly tests edge case 5 (mutual escalation lock). The skill must invert the default 'hold firm' advice."
+    },
+    {
+      "id": "complex-coalition-mapping",
+      "type": "happy_path",
+      "difficulty": "very-complex",
+      "input": "We are trying to close a contract with a large hospital system. The procurement committee has seven people. The CIO seems enthusiastic but the CFO keeps raising cost objections. Legal is slow-walking the review. The clinical lead, whose department would use our tool, has not been in the last two meetings. The deal has been in 'final review' for three months.",
+      "expected_behaviour": [
+        "Phase 2 mandatorily maps the decision-making unit: names the CIO as likely champion, CFO as veto holder, legal as procedural blocker, clinical lead as absent champion/potential ally",
+        "Phase 2 distinguishes the hospital system's stated position from the internal coalition dynamics",
+        "Phase 2 identifies that the clinical lead's absence is a signal worth probing, not background noise",
+        "Phase 3 first move is a private conversation with the internal champion (CIO), not a public position",
+        "Phase 3 includes a strategy to activate the clinical lead as an internal advocate",
+        "Phase 5 sequences moves: champion first, then CFO objection neutralisation, then legal acceleration",
+        "Phase 5 does not recommend a single all-hands presentation as the primary move",
+        "Phase 6 addresses what happens if the CFO's cost objection is an internal budget problem the CIO cannot solve"
+      ],
+      "notes": "Directly tests edge case 4 (coalition that is not unified). The skill must decompose the organisation into its constituent incentive groups."
+    },
+    {
+      "id": "complex-incomplete-information",
+      "type": "happy_path",
+      "difficulty": "very-complex",
+      "input": "I am negotiating a distribution deal with a regional partner. I do not know their gross margin on our product, their relationship with our competitor, or whether they have exclusivity clauses elsewhere. They are moving slowly and I cannot tell if that is leverage or genuine process. I am tempted to ask them directly but I worry it will signal weakness.",
+      "expected_behaviour": [
+        "Phase 2 explicitly invokes the information cost check from SKILL.md: 'Would revealing that you need this information cost more than the information is worth?'",
+        "Phase 2 answers this check for each missing variable rather than defaulting to 'gather more data'",
+        "For at least one variable, Phase 2 concludes that asking directly would be too costly and recommends proceeding on a range",
+        "Phase 3 treats the missing variables as ranges and models contingencies explicitly, not as reasons to delay",
+        "Phase 4 equilibrium is modelled under two scenarios (slow-walk as leverage vs. genuine process) and the dominant strategy under each is compared",
+        "Phase 5 does not delay the primary recommendation pending information that carries a higher price than the decision",
+        "Phase 5 includes a signalling move that indirectly surfaces information without asking directly",
+        "Phase 5 contingency plan is explicit for the case where the partner has an exclusivity clause"
+      ],
+      "notes": "Directly tests edge case 1 (information asymmetry trap). The skill must apply the information cost check and proceed on incomplete data."
+    }
+  ]
+}
