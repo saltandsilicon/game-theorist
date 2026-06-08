@@ -335,7 +335,7 @@ Like how this thinks? There's a person behind it.
 
 This is the kind of work I do: mapping incentives and pressure-testing moves before the stakes are real. If you think it could help you, your team, or a decision you're sitting on, write me.
 
-Thomas Sauvé, thomassauve26@gmail.com or contact@saltsilicon.com.
+Thomas Sauvé, contact@saltsilicon.com.
 
 ---
 
