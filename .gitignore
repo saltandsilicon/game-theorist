@@ -20,3 +20,4 @@ package-lock.json
 .prettierrc
 .lintstagedrc
 .husky/
+LESSONS.md
