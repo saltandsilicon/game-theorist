@@ -1,0 +1,16 @@
+# OMP Project Configuration
+# 
+# Ce fichier permet de surcharger la configuration globale (~/.omp/agent/config.yml)
+# spécifiquement pour ce projet, selon la hiérarchie OMP :
+# built-in defaults <- global <- project (<cwd>/.omp/)
+#
+# INTERDICTION ABSOLUE :
+# Ne jamais créer de dossiers `skills/` ou d'agents spécifiques directement ici.
+# Tout skill ou agent doit être créé et géré de manière centralisée via
+# le repository `skillcraft`, puis projeté ou lié dans les flottes.
+#
+# Exemples de surcharge locale possible (décommenter si besoin) :
+#
+# disabledProviders: ["anthropic"]
+# retry:
+#   maxRetries: 3

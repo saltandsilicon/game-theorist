@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "SessionEnd": [
+      {
+        "command": "python3 tools/scripts/check-project-docs.py . --changed-from-git --codex-session-end-hook",
+        "timeout": 3
+      }
+    ]
+  }
+}
