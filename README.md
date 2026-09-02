@@ -1,65 +1,93 @@
 <div align="center">
 
 # Game Theorist
+
 <img src="./assets/game-theorist-knight.webp" width="150" alt="Game Theorist knight" />
 
 **Model the other player's next move before you make yours.**
 
-A dialogue-driven game theory skill for strategy, negotiation, pricing, fundraising, and competition.
-<br />
-The knight is a reminder: do not move until you can see the board and the response it invites.
-<br /><br />
+A dialogue-driven game theory skill for negotiation, pricing, fundraising, partnerships and competition.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-111111)](./.claude-plugin/plugin.json) [![Licence](https://img.shields.io/badge/licence-MIT-2E7D32)](./LICENSE) [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](./.github/workflows/validate.yml) [![Skill](https://img.shields.io/badge/format-markdown%20skill-6B4F2A)](./skills/game-theorist/SKILL.md)
+[![Version](https://img.shields.io/badge/version-1.0.0-111111)](./.claude-plugin/plugin.json)
+[![Licence](https://img.shields.io/badge/licence-MIT-2E7D32)](./LICENSE)
+[![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](./.github/workflows/validate.yml)
 
 </div>
 
----
+## See the board
 
-## The Problem
+Game Theorist is for decisions where another person, company, regulator or coalition can react. It does not give a strategy until the players, incentives, available moves and likely response are visible.
 
-Advice becomes dangerously flat when another person, company, regulator, or coalition can react. “Raise prices”, “negotiate harder”, or “wait” are not strategies until the response they trigger is visible.
+<table>
+<tr>
+<td align="center"><a href="./examples/theory-prisoners-dilemma.html"><img src="./assets/screenshots/cover-prisoners-dilemma.png" width="240" alt="Prisoner's Dilemma example" /></a><br /><strong>Prisoner's Dilemma</strong></td>
+<td align="center"><a href="./examples/theory-stag-hunt.html"><img src="./assets/screenshots/cover-stag-hunt.png" width="240" alt="Stag Hunt example" /></a><br /><strong>Stag Hunt</strong></td>
+<td align="center"><a href="./examples/theory-chicken.html"><img src="./assets/screenshots/cover-chicken.png" width="240" alt="Chicken game example" /></a><br /><strong>Chicken</strong></td>
+</tr>
+</table>
 
-Game Theorist turns a messy situation into six deliberate phases. It asks who is playing, what each player wants, which moves exist, which outcome is stable, and what concrete move remains credible. Version 1.0.0 is live; the six-phase end-to-end test is still a dedicated follow-up, not a claim made by this README.
+## Try it
 
-## Architecture
+Invoke `/game-theorist` or describe a strategic situation:
+
+```text
+I need to negotiate a job offer. They offered $155K. I am currently at $148K.
+They seem excited, but say the budget is tight.
+```
+
+The skill opens with one question, then works through one phase at a time:
+
+```text
+Describe the situation in 2-3 sentences. Who are the players, and what is at stake?
+```
+
+See the [complete salary negotiation](./demos/salary-negotiation-transcript.md), where the model maps the recruiter's incentives, tests the claimed salary cap and adapts after the counter-offer.
+
+## Contract
+
+| Signal | Behaviour |
+|---|---|
+| Use when | Another actor's strategic response can change the decision |
+| Produces | A six-phase model, a concrete recommendation and a self-contained HTML artefact |
+| Interaction | One question or phase at a time, with user confirmation between phases |
+| Refuses | Pure calculations, drafting, definitions, root-cause analysis and one-person yes/no decisions |
+| Source of truth | [`skills/game-theorist/SKILL.md`](./skills/game-theorist/SKILL.md) |
+
+## The six phases
 
 ```mermaid
 flowchart LR
-    Situation[Describe the situation] --> Question[One opening question]
-    Question --> P1[Phase 1, Deconstruction]
-    P1 --> P2[Phase 2, Incentive Mapping]
-    P2 --> P3[Phase 3, Strategy Space]
-    P3 --> P4[Phase 4, Equilibrium]
-    P4 --> P5[Phase 5, Recommendation]
-    P5 --> P6[Phase 6, Dynamic Adaptation]
-    P6 --> Artifact[Self-contained HTML artefact]
+    S[Situation] --> Q[Opening question]
+    Q --> P1[1. Deconstruction]
+    P1 --> P2[2. Incentives]
+    P2 --> P3[3. Strategy space]
+    P3 --> P4[4. Equilibrium]
+    P4 --> P5[5. Recommendation]
+    P5 --> P6[6. Adaptation]
+    P6 --> A[HTML artefact]
 ```
 
-The source of truth is `skills/game-theorist/SKILL.md`. Agent-specific copies are synchronised by GitHub Actions, while references, examples, demos, and tests deepen the public skill.
+1. **Deconstruction:** identify players, timing, information and the type of game.
+2. **Incentive mapping:** separate stated objectives from revealed incentives, constraints and outside options.
+3. **Strategy space:** enumerate credible moves and remove dominated strategies.
+4. **Equilibrium:** test which outcomes remain stable when each player can deviate.
+5. **Recommendation:** choose one move, make it credible and define contingencies.
+6. **Dynamic adaptation:** update the model when the other side responds or new information appears.
 
-## Usage
-
-```bash
-claude plugin marketplace add saltandsilicon/game-theorist  # Add the marketplace
-claude plugin install game-theorist@game-theorist             # Install for Claude Code
-npx skills add saltandsilicon/game-theorist -a codex         # Install for Codex
-npx skills add saltandsilicon/game-theorist -a cursor        # Install for Cursor
-npx skills add saltandsilicon/game-theorist                   # Install for another agent
-```
-
-Then invoke `/game-theorist` or describe a strategic situation. The skill asks one question, waits, and builds one phase at a time rather than dumping a framework on top of incomplete context.
+The recommendation is a structured hypothesis, not a promise. Missing players, incomplete information, reputation and regulatory options remain explicit analysis risks.
 
 ## Install
 
-Choose the assistant you use:
+### Claude Code
 
 ```bash
-# Claude Code
 claude plugin marketplace add saltandsilicon/game-theorist
 claude plugin install game-theorist@game-theorist
+```
 
-# Codex, Cursor, Windsurf, Cline, or another compatible agent
+### Codex, Cursor, Windsurf, Cline and other compatible agents
+
+```bash
 npx skills add saltandsilicon/game-theorist -a codex
 npx skills add saltandsilicon/game-theorist -a cursor
 npx skills add saltandsilicon/game-theorist -a windsurf
@@ -67,70 +95,54 @@ npx skills add saltandsilicon/game-theorist -a cline
 npx skills add saltandsilicon/game-theorist
 ```
 
-For a manual markdown import:
+### Manual Markdown import
 
 ```bash
 git clone https://github.com/saltandsilicon/game-theorist.git
 cp -r game-theorist/skills/game-theorist ~/.claude/skills/
 ```
 
-## Verification
+## Examples and references
+
+| Resource | What it contains |
+|---|---|
+| [Salary negotiation](./demos/salary-negotiation-transcript.md) | A complete six-phase conversation |
+| [Wrong-call correction](./demos/wrong-call-correction-transcript.md) | A case where the model must revise its first read |
+| [Worked examples](./examples/worked-examples.md) | Condensed strategic cases across business situations |
+| [Edge cases](./examples/edge-cases.md) | Boundaries and ambiguous activation cases |
+| [Frameworks](./docs/frameworks.md) | The analytical methods used across the phases |
+| [Resources](./docs/resources.md) | Books, papers, courses and tools |
+
+## Source and distribution
+
+```text
+skills/game-theorist/SKILL.md
+        |
+        +--> Claude Code plugin
+        +--> Codex and compatible agent installers
+        +--> generated Cursor and Windsurf copies
+```
+
+Edit [`skills/game-theorist/SKILL.md`](./skills/game-theorist/SKILL.md). Do not edit `.cursor/` or `.windsurf/` directly; GitHub Actions generates those copies from the source skill.
+
+## Verify a change
 
 ```bash
 python3 scripts/validate.py
 ```
 
-The validator checks the skill frontmatter, both plugin manifests, and their version alignment. The repository's dedicated end-to-end six-phase run remains a separate test gate before a future promotion.
+The validator checks the skill frontmatter, both Claude plugin manifests and version alignment. It requires PyYAML for frontmatter parsing:
 
-## What's versioned
-
-The root snapshot measured on 28 July 2026 contains **19 directories** and **15 files** outside `.git/`.
-
-```text
-game-theorist/
-├── skills/game-theorist/       Source skill, references, and evaluation material
-├── docs/                       Framework and resource references
-├── examples/                   Worked HTML and Markdown examples
-├── demos/                      Full conversation transcripts
-├── assets/                     Knight branding and screenshots
-├── .github/workflows/          Validation, deployment, and sync automation
-├── .claude-plugin/             Claude Code manifests
-├── scripts/validate.py         Local manifest validator
-├── CONTRIBUTING.md             Contribution rules
-└── LICENSE                     MIT licence
+```bash
+pip install pyyaml
 ```
 
-The source skill is edited once. `.cursor/` and `.windsurf/` copies are generated by workflow and must not become competing sources of truth.
+The automated validator does not run a complete six-phase conversation. Before opening a pull request, test one real situation in a supported assistant and confirm that the skill waits between phases.
 
-## Guarantees
+## Contributing
 
-- The skill asks one opening question and proceeds one phase at a time.
-- It is a structured hypothesis, not a promise that the recommendation is correct.
-- Missing players, incomplete information, reputation, and regulatory options are treated as analysis risks.
-- It declines pure calculations, drafting tasks, definitions, and one-person decisions with no strategic opponent.
-- It does not replace human judgement, especially where ethical stakes or missing context change the move.
+Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before changing the skill. Contributions should sharpen a real strategic failure mode, framework or example. Open pull requests against `main` and include one applied example when adding a framework.
 
-## Lexicon
+## Licence
 
-| Term | Plain meaning |
-| --- | --- |
-| Player | Any person, organisation, regulator, or silent party whose choice can change the outcome. |
-| Incentive | The reason a player prefers one outcome over another. |
-| BATNA | The best alternative available if a negotiated agreement fails. |
-| Strategy space | The complete set of moves available to each player. |
-| Dominated strategy | A move that is always worse than another move, whatever the opponent does. |
-| Equilibrium | An outcome where no player benefits from changing strategy alone. |
-| Nash equilibrium | The formal name for that stable no-profitable-deviation outcome. |
-| Commitment device | A constraint that makes a threat or promise credible by removing flexibility. |
-| Repeated game | A situation where the same players expect to interact again. |
-| Signalling | An action that reveals or shapes what other players believe about you. |
-| Artefact | The self-contained HTML document produced after the six phases. |
-
-## Where to look
-
-- [The source skill](./skills/game-theorist/SKILL.md): the phase-by-phase behaviour contract.
-- [Framework reference](./docs/frameworks.md): the eleven core frameworks and use cases.
-- [Worked examples](./examples/worked-examples.md): fourteen strategic cases.
-- [Resources](./docs/resources.md): books, papers, courses, and tools.
-- [Contributing](./CONTRIBUTING.md): how to improve the skill safely.
-- [Validation script](./scripts/validate.py): local manifest and frontmatter checks.
+Game Theorist is available under the [MIT Licence](./LICENSE).
