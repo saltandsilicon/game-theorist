@@ -21,3 +21,7 @@ package-lock.json
 .lintstagedrc
 .husky/
 LESSONS.md
+
+# Machine-local OMP
+.omp/
+**/.omp/
